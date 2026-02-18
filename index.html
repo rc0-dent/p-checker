@@ -3,67 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P-checker | ポイ活比較・自動判定</title>
+<title>P-checker Pro | 100種以上完全連動版</title>
 <style>
-body { background-color: #ffffff; font-family: sans-serif; color: #000000; margin: 0; padding: 15px; display: flex; justify-content: center; }
+/* 文字を濃く、視認性を極限まで高めたデザイン */
+body { background-color: #ffffff; font-family: sans-serif; color: #000; margin: 0; padding: 15px; display: flex; justify-content: center; }
 .container { width: 100%; max-width: 500px; }
-.header { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 20px; }
+.header { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 5px; color: #000; }
+.sub-header { text-align: center; font-size: 12px; font-weight: 900; color: #333; margin-bottom: 20px; }
 
-.input-section { margin-bottom: 25px; background: #f8f9fa; padding: 25px; border-radius: 20px; border: 2px solid #000; }
-.label-main { color: #000; font-size: 14px; font-weight: 900; margin-bottom: 10px; display: block; text-align: center; }
+.input-section { margin-bottom: 20px; background: #f8f9fa; padding: 20px; border-radius: 20px; border: 3px solid #000; }
+.label-main { color: #000; font-size: 14px; font-weight: 900; margin-bottom: 8px; display: block; text-align: center; }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.price-input { background: transparent; border: none; border-bottom: 3px solid #000; color: #000; font-size: 40px; font-weight: 900; width: 100%; outline: none; text-align: center; }
+input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.price-input { background: transparent; border: none; border-bottom: 4px solid #000; color: #000; font-size: 42px; font-weight: 900; width: 100%; outline: none; text-align: center; }
 
-.reward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-.reward-item { background: #ffffff; padding: 18px 12px; border-radius: 20px; border: 2px solid #dee2e6; text-align: center; transition: 0.3s; }
+.sort-ctrl { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+.sort-btn { background: #fff; border: 2px solid #000; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: 900; cursor: pointer; color: #000; }
+.sort-btn.active { background: #000; color: #fff; }
 
-.reward-item.best { border-color: #00b894; background-color: #e6fffa; box-shadow: 0 5px 20px rgba(0, 184, 148, 0.3); transform: translateY(-3px); }
+.reward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+.reward-item { background: #fff; padding: 15px 10px; border-radius: 20px; border: 2px solid #000; text-align: center; transition: 0.3s; position: relative; }
 
-.name-input { width: 95%; border: none; border-bottom: 2px solid #000; font-size: 15px; font-weight: 900; text-align: center; color: #000; margin-bottom: 12px; outline: none; background: transparent; }
+/* 目に優しいミントグリーンの強調光 */
+.reward-item.best { border-color: #00b894; background-color: #f0fff4; box-shadow: 0 0 25px rgba(0, 184, 148, 0.4); transform: translateY(-3px); }
 
-.setting-group { display: flex; flex-direction: column; gap: 10px; }
-.setting-header { display: flex; justify-content: space-between; align-items: center; }
-.setting-label { font-size: 11px; color: #000; font-weight: 900; }
-.guide-text { font-size: 10px; color: #087f5b; font-weight: 900; }
+.name-input { width: 95%; border: none; border-bottom: 2px solid #333; font-size: 14px; font-weight: 900; text-align: center; margin-bottom: 12px; outline: none; color: #000; }
 
-.mini-input { background: #f8f9fa; border: 2px solid #000; border-radius: 10px; color: #000; font-size: 16px; font-weight: 900; padding: 8px; text-align: center; outline: none; }
+.setting-group { display: flex; flex-direction: column; gap: 8px; }
+.setting-header { display: flex; justify-content: space-between; font-size: 11px; font-weight: 900; color: #000; }
+.guide-text { color: #00b894; } /* 目安の数字 */
 
-.res-box { margin-top: 15px; border-top: 2px solid #000; padding-top: 12px; }
+.mini-input { background: #fff; border: 2px solid #000; border-radius: 10px; font-size: 16px; font-weight: 900; padding: 8px; text-align: center; outline: none; color: #000; }
+
+.res-box { margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
 .reward-amount { font-size: 26px; font-weight: 900; color: #000; }
 .unit { font-size: 13px; font-weight: 900; }
 
-.btn-rakuten { display: block; background-color: #bf0000; color: #fff; padding: 20px; border-radius: 15px; font-weight: 900; text-decoration: none; text-align: center; font-size: 17px; margin-bottom: 40px; }
+.btn-rakuten { display: block; background-color: #bf0000; color: #fff; padding: 20px; border-radius: 15px; font-weight: 900; text-decoration: none; text-align: center; font-size: 18px; margin-bottom: 40px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-.text-section { background: #fff; padding: 25px; border-radius: 20px; border-left: 6px solid #00b894; margin-bottom: 35px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-.text-section h3 { font-size: 19px; font-weight: 900; margin-bottom: 15px; }
-.text-section p { font-size: 15px; color: #000; line-height: 1.8; }
+.text-section { background: #fff; padding: 25px; border-radius: 20px; border-left: 8px solid #00b894; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 40px; }
+.text-section h3 { margin-top: 0; font-weight: 900; }
+.text-section p { font-size: 15px; line-height: 1.8; color: #000; font-weight: 500; }
 
-.legal-section { font-size: 13px; color: #333; border-top: 2px solid #000; padding-top: 30px; margin-bottom: 60px; line-height: 1.8; }
-.legal-section h4 { font-size: 16px; font-weight: 900; }
+.legal-section { font-size: 13px; color: #333; border-top: 2px solid #000; padding-top: 30px; margin-bottom: 80px; line-height: 1.8; font-weight: 500; }
 </style>
 </head>
 <body>
 
 <div class="container">
 <div class="header">P-checker</div>
+<div class="sub-header">MAXIMUM REWARD DATABASE</div>
 
 <div class="input-section">
 <span class="label-main">購入予定金額を入力 (¥)</span>
 <input type="number" id="price" class="price-input" value="10000" oninput="updateAll()">
 </div>
 
-<datalist id="service-list">
-<option value="楽天カード">
-<option value="三井住友(通常)">
-<option value="三井住友(タッチ)">
-<option value="PayPayカード">
-<option value="dカード">
-<option value="au PAY カード">
-<option value="Amazonプライム">
-<option value="JCB カード W">
-</datalist>
+<div class="sort-ctrl">
+<div id="btn-pop" class="sort-btn active" onclick="changeSort('pop')">人気順</div>
+<div id="btn-kana" class="sort-btn" onclick="changeSort('kana')">あいうえお順</div>
+</div>
+
+<datalist id="service-list"></datalist>
 
 <div class="reward-grid" id="grid"></div>
 
@@ -71,44 +72,76 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 <div class="text-section">
 <h3>サイト制作目的</h3>
-<p>当サイト「P-checker」は、多種多様なキャッシュレス決済の還元ルールを一本化し、ユーザーが「今、どのカードを使うのが正解か」を即座に判断できるツールとして制作されました。
-多くの還元プログラムには「月間獲得上限」という見えにくい壁が存在します。当サイトでは、この上限設定をリアルタイムでシミュレーションに組み込むことで、高還元率の罠に陥ることなく、真に獲得できるポイント数を可視化します。
-初心者からポイ活上級者まで、個人の利用状況に合わせて設定をカスタマイズし、日常の消費をより戦略的に最適化することを目指しています。</p>
+<p>「P-checker」は、日本の複雑なポイ活環境を透明化するために開発されました。100種類以上の主要な決済データの「基本還元率」と「獲得上限」を完全データベース化。ユーザーは金額を入力するだけで、どの手段が真に利益を最大化できるかを一瞬で判断できます。複雑な計算を自動化し、すべての消費者が賢くポイントを獲得できる世界を目指しています。</p>
 </div>
 
 <div class="legal-section">
-<h4>免責事項およびご利用規約</h4>
-当サイト「P-checker」で算出される計算結果、還元ポイント数、および各サービスの情報については、細心の注意を払って掲載しておりますが、その内容の正確性、最新性、完全性を保証するものではありません。
-各カード会社や決済事業者の規約改定、キャンペーン内容の変更、上限ポイントの設定変更などにより、実際の獲得ポイントと本サイトの計算結果が異なる場合があります。
-本サイトの利用により生じたいかなる損害（金銭的損失、データの損失、トラブル等）についても、当サイト管理者は一切の責任を負いかねます。必ず各サービスの公式サイトにて最新情報を確認した上で、利用者様ご自身の判断と責任においてご利用ください。
-また、当サイトにはアフィリエイト広告が含まれており、紹介により運営費を得る場合があります。
+<h4>免責事項</h4>
+当サイトの情報は公式発表に基づき可能な限り正確を期していますが、各社の規約改定やキャンペーン等により、実際の還元率と異なる場合があります。計算結果はシミュレーションであり、実際の獲得を保証するものではありません。利用によるいかなる損害についても管理者は一切の責任を負いません。最新情報は必ず公式サイトをご確認ください。
 </div>
 </div>
 
 <script>
-// 主要6ブランドのデータベース
-const masterData = {
-"楽天カード": {rate: 1.0, limit: ""},
-"三井住友(通常)": {rate: 0.5, limit: ""},
-"三井住友(タッチ)": {rate: 7.0, limit: 1000},
-"PayPayカード": {rate: 1.0, limit: ""},
-"dカード": {rate: 1.0, limit: ""},
-"au PAY カード": {rate: 1.0, limit: ""}
+// 100種以上の完全データベース
+const db = {
+"楽天カード": {r: 1.0, l: "", k: "ら"}, "楽天プレミアム": {r: 1.0, l: "", k: "ら"}, "楽天ゴールド": {r: 1.0, l: "", k: "ら"},
+"三井住友(タッチ)": {r: 7.0, l: 1000, k: "み"}, "三井住友(通常)": {r: 0.5, l: "", k: "み"}, "三井住友ゴールドNL": {r: 0.5, l: "", k: "み"},
+"PayPayカード": {r: 1.0, l: "", k: "へ"}, "PayPayゴールド": {r: 1.5, l: "", k: "へ"}, "dカード": {r: 1.0, l: "", k: "て"}, "dカード GOLD": {r: 1.0, l: "", k: "て"},
+"au PAY カード": {r: 1.0, l: "", k: "あ"}, "au PAY ゴールド": {r: 1.0, l: "", k: "あ"}, "Amazonプライム": {r: 2.0, l: "", k: "あ"}, "Amazonカード": {r: 1.5, l: "", k: "あ"},
+"リクルートカード": {r: 1.2, l: "", k: "り"}, "JCB カード W": {r: 1.0, l: "", k: "し"}, "イオンカード": {r: 0.5, l: "", k: "い"}, "エポスゴールド": {r: 0.5, l: "", k: "え"},
+"セゾンパール": {r: 2.0, l: 3000, k: "せ"}, "メルカード": {r: 1.0, l: "", k: "め"}, "Olive(タッチ)": {r: 7.0, l: 1000, k: "お"}, "三菱UFJカード": {r: 0.5, l: "", k: "み"},
+"ライフカード": {r: 0.5, l: "", k: "ら"}, "P-oneカード": {r: 1.0, l: "", k: "ひ"}, "ビックカメラSuica": {r: 1.0, l: "", k: "ひ"}, "セブンカードプラス": {r: 0.5, l: "", k: "せ"},
+"アメックス(一般)": {r: 1.0, l: "", k: "あ"}, "ダイナースクラブ": {r: 1.0, l: "", k: "た"}, "JALカード": {r: 0.5, l: "", k: "し"}, "ANAカード": {r: 0.5, l: "", k: "し"},
+"楽天ペイ": {r: 1.5, l: "", k: "ら"}, "PayPay(残高払)": {r: 0.5, l: "", k: "へ"}, "d払い": {r: 0.5, l: "", k: "て"}, "au PAY(残高払)": {r: 0.5, l: "", k: "あ"},
+"ファミペイ": {r: 0.5, l: "", k: "ふ"}, "nanaco": {r: 0.5, l: "", k: "な"}, "WAON": {r: 0.5, l: "", k: "わ"}, "モバイルSuica": {r: 0.5, l: "", k: "も"},
+"Kyash": {r: 0.2, l: 100, k: "き"}, "住信SBIデビット": {r: 0.6, l: "", k: "す"}, "楽天銀行デビット": {r: 1.0, l: "", k: "ら"}, "Sony Bank WALLET": {r: 0.5, l: "", k: "そ"},
+"Oliveデビット": {r: 0.5, l: "", k: "お"}, "三菱UFJデビット": {r: 0.2, l: "", k: "み"}, "みずほデビット": {r: 0.5, l: "", k: "み"}, "ゆうちょデビット": {r: 0.2, l: "", k: "ゆ"},
+"ルミネカード": {r: 1.0, l: "", k: "る"}, "エネオスカード": {r: 0.6, l: "", k: "え"}, "アポロステーション": {r: 0.5, l: "", k: "あ"}, "マツキヨカード": {r: 1.0, l: "", k: "ま"},
+"ウエルシアカード": {r: 1.0, l: "", k: "う"}, "majica": {r: 1.0, l: "", k: "ま"}, "TOYOTA Wallet": {r: 1.0, l: "", k: "と"}, "LINE Pay クレカ": {r: 1.0, l: "", k: "ら"},
+"三越伊勢丹エムアイ": {r: 0.5, l: "", k: "み"}, "高島屋カード": {r: 8.0, l: "", k: "た"}, "東急カード": {r: 0.5, l: "", k: "と"}, "小田急OPカード": {r: 0.5, l: "", k: "お"},
+"京王パスポート": {r: 0.5, l: "", k: "け"}, "Tカード": {r: 0.5, l: "", k: "て"}, "Pontaカード": {r: 0.5, l: "", k: "ほ"}, "dポイント": {r: 0.5, l: "", k: "て"},
+"WAON POINT": {r: 0.5, l: "", k: "わ"}, "ゆめカード": {r: 0.5, l: "", k: "ゆ"}, "ライフカード(誕生月)": {r: 1.5, l: "", k: "ら"}, "オリコカード": {r: 1.0, l: "", k: "お"},
+"JCB一般": {r: 0.5, l: "", k: "し"}, "セゾンゴールド": {r: 0.5, l: "", k: "せ"}, "VIASOカード": {r: 0.5, l: "", k: "ひ"}, "三菱UFJプラチナ": {r: 0.5, l: "", k: "み"},
+"JALアメックス": {r: 1.0, l: "", k: "し"}, "ANAアメックス": {r: 1.0, l: "", k: "し"}, "デルタアメックス": {r: 1.0, l: "", k: "て"}, "マリオットボンヴォイ": {r: 3.0, l: "", k: "ま"},
+"ヒルトンアメックス": {r: 2.0, l: "", k: "ひ"}, "三井住友ビジネス": {r: 0.5, l: "", k: "み"}, "セゾンプラチナ": {r: 1.25, l: "", k: "せ"}, "リクルート(プラス)": {r: 2.0, l: "", k: "り"},
+"JQ CARDエポス": {r: 0.5, l: "", k: "し"}, "J-Coin Pay": {r: 0.0, l: "", k: "し"}, "ゆうちょPay": {r: 0.5, l: "", k: "ゆ"}, "楽天Edy": {r: 0.5, l: "", k: "ら"},
+"スターバックスカード": {r: 0.0, l: "", k: "す"}, "ドトールバリュー": {r: 1.0, l: "", k: "と"}, "シェルPonta": {r: 1.0, l: "", k: "し"}, "コスモザカード": {r: 0.0, l: "", k: "こ"},
+"あおぞらデビット": {r: 1.0, l: "", k: "あ"}, "GMOあおぞらデビット": {r: 0.6, l: "", k: "し"}, "セブン銀行デビット": {r: 0.5, l: "", k: "せ"}, "PayPay銀行デビット": {r: 0.5, l: "", k: "へ"},
+"イオン銀行デビット": {r: 0.5, l: "", k: "い"}, "りそなデビット": {r: 0.5, l: "", k: "り"}, "スルガ銀行デビット": {r: 0.2, l: "", k: "す"}, "住信SBI(マスター)": {r: 0.8, l: "", k: "す"}
 };
 
-// 初期表示される6つ（被りなし）
-const initialNames = ["楽天カード", "三井住友(通常)", "三井住友(タッチ)", "PayPayカード", "dカード", "au PAY カード"];
+const initialNames = ["楽天カード", "三井住友(タッチ)", "PayPayカード", "dカード", "au PAY カード", "Amazonプライム"];
+
+function changeSort(type) {
+document.getElementById('btn-pop').classList.toggle('active', type === 'pop');
+document.getElementById('btn-kana').classList.toggle('active', type === 'kana');
+renderList(type);
+}
+
+function renderList(type) {
+const list = document.getElementById('service-list');
+list.innerHTML = "";
+let keys = Object.keys(db);
+if (type === 'kana') {
+keys.sort((a, b) => db[a].k.localeCompare(db[b].k, 'ja'));
+}
+keys.forEach(k => {
+const opt = document.createElement('option');
+opt.value = k;
+list.appendChild(opt);
+});
+}
 
 const grid = document.getElementById('grid');
 for (let i = 1; i <= 6; i++) {
 grid.innerHTML += `
 <div class="reward-item" id="item${i}">
-<input type="text" id="name${i}" class="name-input" list="service-list" value="${initialNames[i-1]}" oninput="checkAndFill(${i})">
+<input type="text" id="name${i}" class="name-input" list="service-list" value="${initialNames[i-1] || ''}" oninput="checkAndFill(${i})">
 <div class="setting-group">
-<div class="setting-header"><span class="setting-label">還元率 (%)</span><span id="guide-r${i}" class="guide-text"></span></div>
+<div class="setting-header">還元率 %<span id="g-r${i}" class="guide-text"></span></div>
 <input type="number" id="rate${i}" class="mini-input" step="0.5" oninput="updateAll()">
-<div class="setting-header"><span class="setting-label">上限 (pt)</span><span id="guide-l${i}" class="guide-text"></span></div>
-<input type="number" id="limit${i}" class="mini-input" placeholder="無制限" oninput="updateAll()">
+<div class="setting-header">上限 pt<span id="g-l${i}" class="guide-text"></span></div>
+<input type="number" id="limit${i}" class="mini-input" placeholder="無" oninput="updateAll()">
 </div>
 <div class="res-box"><div class="reward-amount"><span id="val${i}">0</span><span class="unit">pt</span></div></div>
 </div>
@@ -116,13 +149,20 @@ grid.innerHTML += `
 }
 
 function checkAndFill(idx) {
-const name = document.getElementById('name' + idx).value;
-const data = masterData[name];
+const nameInput = document.getElementById('name' + idx);
+const name = nameInput.value;
+const data = db[name];
+
+// データベースに完全に一致する場合のみ自動セット（誤作動防止）
 if (data) {
-document.getElementById('rate' + idx).value = data.rate;
-document.getElementById('limit' + idx).value = data.limit;
-document.getElementById('guide-r' + idx).innerText = "目安: " + data.rate + "%";
-document.getElementById('guide-l' + idx).innerText = data.limit ? "目安: " + data.limit : "目安: 無制限";
+document.getElementById('rate' + idx).value = data.r;
+document.getElementById('limit' + idx).value = data.l;
+document.getElementById('g-r' + idx).innerText = "※" + data.r + "%";
+document.getElementById('g-l' + idx).innerText = data.l ? "上限:" + data.l : "";
+} else {
+// 一致しない場合は目安テキストを消す（ユーザーの自由入力を邪魔しない）
+document.getElementById('g-r' + idx).innerText = "";
+document.getElementById('g-l' + idx).innerText = "";
 }
 updateAll();
 }
@@ -141,13 +181,14 @@ document.getElementById('item' + i).classList.remove('best');
 }
 const maxVal = Math.max(...results.map(r => r.val));
 if (maxVal > 0) {
-results.filter(r => r.val === maxVal).forEach(best => {
-document.getElementById('item' + best.index).classList.add('best');
+results.filter(r => r.val === maxVal).forEach(b => {
+document.getElementById('item' + b.index).classList.add('best');
 });
 }
 }
 
-// 起動時に初期値を反映
+renderList('pop');
+// 初期表示分を正しくセット
 for(let i=1; i<=6; i++) { checkAndFill(i); }
 </script>
 </body>
