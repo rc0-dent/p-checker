@@ -3,99 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P-Checker Global Edition</title>
+<title>P-checker | ポイ活還元率計算ツール</title>
 <style>
-/* ガチ勢向けのダークモード・プロデザイン */
+/* 黒ベースのプロフェッショナルデザイン */
 body {
 background-color: #000;
-font-family: 'Inter', -apple-system, sans-serif;
+font-family: 'Inter', -apple-system, "Hiragino Kaku Gothic ProN", sans-serif;
 color: #fff;
 margin: 0;
 padding: 20px;
-display: flex;
-justify-content: center;
+line-height: 1.6;
 }
-.container { width: 100%; max-width: 400px; }
+.container { max-width: 500px; margin: 0 auto; }
 
-.header { color: #CCFF00; font-size: 36px; font-weight: 900; text-align: left; margin-bottom: 5px; }
-.sub-header { color: #444; font-size: 12px; text-align: left; margin-bottom: 30px; letter-spacing: 1px; }
+.header { color: #CCFF00; font-size: 42px; font-weight: 900; text-align: center; margin-bottom: 5px; letter-spacing: -1px; }
+.sub-header { color: #444; font-size: 14px; text-align: center; margin-bottom: 40px; font-weight: bold; }
 
-/* 入力セクション */
-.input-section { margin-bottom: 40px; text-align: left; }
-.label { color: #666; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; }
+/* 金額入力セクション */
+.input-section { margin-bottom: 40px; background: #111; padding: 25px; border-radius: 25px; border: 1px solid #222; }
+.label { color: #CCFF00; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; text-align: center; }
 .price-input {
-background: transparent; border: none; border-bottom: 2px solid #222;
-color: #fff; font-size: 56px; font-weight: 900; width: 100%; outline: none;
-padding-bottom: 10px; transition: border-color 0.3s;
+background: transparent; border: none; border-bottom: 2px solid #333;
+color: #fff; font-size: 50px; font-weight: 900; width: 100%; outline: none;
+text-align: center; transition: 0.3s;
 }
 .price-input:focus { border-color: #CCFF00; }
 
-/* 還元リスト */
-.reward-list { display: flex; flex-direction: column; gap: 15px; }
-.reward-item {
-background: #111; padding: 20px; border-radius: 20px;
-display: flex; justify-content: space-between; align-items: center;
-border: 1px solid #1a1a1a;
+/* 6つの項目を2列に並べる（グリッド） */
+.reward-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 15px;
+margin-bottom: 40px;
 }
-.service-info { text-align: left; }
-.service-name { font-size: 14px; font-weight: bold; color: #fff; }
-.service-rate { font-size: 12px; color: #555; }
-.reward-amount { font-size: 24px; font-weight: 900; color: #CCFF00; }
-.unit { font-size: 12px; margin-left: 5px; color: #CCFF00; }
+.reward-item {
+background: #111; padding: 15px; border-radius: 15px;
+border: 1px solid #1a1a1a; text-align: center;
+}
+.service-name { font-size: 13px; font-weight: bold; color: #888; margin-bottom: 5px; }
+.reward-amount { font-size: 20px; font-weight: 900; color: #fff; }
+.unit { font-size: 12px; color: #CCFF00; margin-left: 2px; }
 
 /* アクションボタン */
-.action-group { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
+.btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 50px; }
 .btn {
-padding: 20px; border-radius: 18px; font-weight: 800; text-decoration: none;
-text-align: center; font-size: 16px; transition: 0.3s;
+padding: 18px; border-radius: 15px; font-weight: 800; text-decoration: none;
+text-align: center; font-size: 15px; transition: 0.3s;
 }
-.btn-rakuten { background-color: #CCFF00; color: #000; } /* 収益ボタンを目立たせる */
+.btn-rakuten { background-color: #CCFF00; color: #000; }
 .btn-smbc { border: 1px solid #333; color: #fff; }
-.btn:active { transform: scale(0.95); }
+
+/* テキストセクション */
+.text-section { text-align: left; background: #0a0a0a; padding: 20px; border-radius: 15px; border-left: 3px solid #CCFF00; margin-bottom: 30px; }
+.text-section h3 { color: #CCFF00; font-size: 16px; margin-top: 0; }
+.text-section p { font-size: 13px; color: #ccc; margin-bottom: 0; }
+
+/* 免責事項（自分を守る文） */
+.legal-section { text-align: left; font-size: 11px; color: #444; border-top: 1px solid #222; padding-top: 20px; }
+.legal-section h4 { margin-bottom: 10px; color: #666; }
 </style>
 </head>
 <body>
 
 <div class="container">
-<div class="header">P-CALC</div>
-<div class="sub-header">ULTIMATE REWARD TRACKER</div>
+<div class="header">P-checker</div>
+<div class="sub-header">SIMPLE REWARD CALCULATOR</div>
 
 <div class="input-section">
-<span class="label">PURCHASE AMOUNT</span>
+<span class="label">購入予定金額を入力</span>
 <input type="number" id="price" class="price-input" value="10000" oninput="update()">
 </div>
 
-<div class="reward-list">
+<div class="reward-grid">
 <div class="reward-item">
-<div class="service-info">
-<div class="service-name">Rakuten Card</div>
-<div class="service-rate">Basic Reward 1.0%</div>
+<div class="service-name">楽天カード(通常)</div>
+<div class="reward-amount"><span id="val-1">100</span><span class="unit">pt</span></div>
 </div>
-<div class="reward-amount"><span id="val-rakuten">100</span><span class="unit">円</span></div>
+<div class="reward-item">
+<div class="service-name">三井住友(通常)</div>
+<div class="reward-amount"><span id="val-2">50</span><span class="unit">pt</span></div>
+</div>
+<div class="reward-item">
+<div class="service-name">三井住友(タッチ)</div>
+<div class="reward-amount"><span id="val-3">700</span><span class="unit">pt</span></div>
+</div>
+<div class="reward-item">
+<div class="service-name">PayPayカード</div>
+<div class="reward-amount"><span id="val-4">100</span><span class="unit">pt</span></div>
+</div>
+<div class="reward-item">
+<div class="service-name">dカード</div>
+<div class="reward-amount"><span id="val-5">100</span><span class="unit">pt</span></div>
+</div>
+<div class="reward-item">
+<div class="service-name">Amazon(プライム)</div>
+<div class="reward-amount"><span id="val-6">200</span><span class="unit">pt</span></div>
+</div>
 </div>
 
-<div class="reward-item">
-<div class="service-info">
-<div class="service-name">SMBC Card (NL)</div>
-<div class="service-rate">Touch Payment Max 7.0%</div>
-</div>
-<div class="reward-amount"><span id="val-smbc">700</span><span class="unit">円</span></div>
-</div>
-
-<div class="reward-item">
-<div class="service-info">
-<div class="service-name">Other Services</div>
-<div class="service-rate">Standard 0.5%</div>
-</div>
-<div class="reward-amount"><span id="val-other">50</span><span class="unit">円</span></div>
-</div>
-</div>
-
-<div class="action-group">
+<div class="btn-group">
 <a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F"
-target="_blank" class="btn btn-rakuten">RAKUTEN で貯める</a>
-
+target="_blank" class="btn btn-rakuten">楽天カードを申し込む</a>
 <a href="https://www.smbc-card.com/" target="_blank" class="btn btn-smbc">三井住友カード 詳細</a>
+</div>
+
+<div class="text-section">
+<h3>サイト制作目的</h3>
+<p>
+複雑化するキャッシュレス決済の還元率を、誰でも一瞬で可視化するために制作されました。「結局どこで払うのが一番得なのか？」という悩みを解消し、スマートなポイ活をサポートします。
+</p>
+</div>
+
+<div class="legal-section">
+<h4>免責事項</h4>
+当サイト「P-checker」で提供される情報（還元率、計算結果、リンク先の内容等）は、細心の注意を払って掲載しておりますが、その正確性、完全性、最新性を保証するものではありません。各サービスの規約変更やキャンペーン終了等により、実際の還元額とは異なる場合があります。利用者が本サイトの情報を用いて行う一切の行為、およびそれに関連して生じた損害、トラブルについて、当サイト管理者は一切の責任を負いません。必ず各公式サイトの最新情報をご確認の上、自己責任においてご利用ください。また、当サイトはアフィリエイトプログラムにより商品を紹介しています。
 </div>
 </div>
 
@@ -103,12 +124,14 @@ target="_blank" class="btn btn-rakuten">RAKUTEN で貯める</a>
 function update() {
 const p = parseFloat(document.getElementById('price').value) || 0;
 
-// 各還元率の計算
-document.getElementById('val-rakuten').innerText = Math.floor(p * 0.01).toLocaleString();
-document.getElementById('val-smbc').innerText = Math.floor(p * 0.07).toLocaleString();
-document.getElementById('val-other').innerText = Math.floor(p * 0.005).toLocaleString();
+// 1: 楽天(1%), 2: 三井通常(0.5%), 3: 三井タッチ(7.0%), 4: PayPay(1%), 5: d(1%), 6: Amazon(2.0%)
+document.getElementById('val-1').innerText = Math.floor(p * 0.01).toLocaleString();
+document.getElementById('val-2').innerText = Math.floor(p * 0.005).toLocaleString();
+document.getElementById('val-3').innerText = Math.floor(p * 0.07).toLocaleString();
+document.getElementById('val-4').innerText = Math.floor(p * 0.01).toLocaleString();
+document.getElementById('val-5').innerText = Math.floor(p * 0.01).toLocaleString();
+document.getElementById('val-6').innerText = Math.floor(p * 0.02).toLocaleString();
 }
-// 初期実行
 update();
 </script>
 
