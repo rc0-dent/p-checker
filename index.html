@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, SafeAreaView, TouchableOpacity, Linking } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 
-// --- 設定エリア：A8.netで取得した自分のリンクをここに貼る ---
-const AD_URLS = {
-'楽天ペイ等': 'https://www.rakuten-card.co.jp/',
-'三井住友NL': 'https://www.smbc-card.com/',
-'J-Coin': 'https://j-coin.jp/',
-'default': 'https://www.google.com'
-};
+const FAMOUS_SERVICES = [
+{ name: '楽天ペイ', rate: '1.5', limit: '' },
+{ name: '三井住友(NL)', rate: '7.0', limit: '1000' },
+{ name: 'J-Coin Pay', rate: '10.0', limit: '500' },
+];
 
 export default function App() {
 const [price, setPrice] = useState('10000');
@@ -21,27 +18,10 @@ const [cards, setCards] = useState([
 { id: 6, name: '案6', rate: '0.0', limit: '' },
 ]);
 
-// 【保存機能】アプリ起動時にデータを読み込む
-useEffect(() => {
-const loadData = async () => {
-try {
-const saved = await AsyncStorage.getItem('@p_checker_data_v1');
-if (saved !== null) setCards(JSON.parse(saved));
-} catch (e) { console.error("Load error", e); }
-};
-loadData();
-}, []);
-
-// 【保存機能】入力のたびに自動保存
-const updateCard = async (id, field, value) => {
-const newCards = cards.map(c => c.id === id ? { ...c, [field]: value } : c);
-setCards(newCards);
-try {
-await AsyncStorage.setItem('@p_checker_data_v1', JSON.stringify(newCards));
-} catch (e) { console.error("Save error", e); }
+const updateCard = (id, field, value) => {
+setCards(cards.map(c => c.id === id ? { ...c, [field]: value } : c));
 };
 
-// ポイント計算ロジック
 const calcPt = (p, r, l) => {
 const numP = parseFloat(p) || 0;
 const numR = parseFloat(r) || 0;
@@ -51,8 +31,6 @@ return Math.min(numP * (numR / 100), numL);
 
 const results = cards.map(c => calcPt(price, c.rate, c.limit));
 const maxPt = Math.max(...results);
-const winnerIndex = results.indexOf(maxPt);
-const winnerName = maxPt > 0 ? cards[winnerIndex].name : null;
 
 return (
 <SafeAreaView style={styles.container}>
@@ -61,7 +39,7 @@ return (
 </View>
 
 <ScrollView contentContainerStyle={styles.scroll}>
-{/* 金額入力 */}
+{/* 1. 金額入力 */}
 <View style={styles.priceSection}>
 <Text style={styles.label}>買い物金額</Text>
 <View style={styles.priceInputWrapper}>
@@ -70,26 +48,12 @@ style={styles.priceInput}
 keyboardType="numeric"
 value={price}
 onChangeText={setPrice}
-placeholder="0"
-placeholderTextColor="#333"
 />
 <Text style={styles.yenText}>円</Text>
 </View>
 </View>
 
-{/* 動的アフィリエイトボタン */}
-{winnerName && (
-<TouchableOpacity
-style={styles.affiliateBtn}
-onPress={() => Linking.openURL(AD_URLS[winnerName] || AD_URLS.default)}
->
-<Text style={styles.affiliateBtnText}>
-🔥 {winnerName} で最大還元を受ける
-</Text>
-</TouchableOpacity>
-)}
-
-{/* 比較ボード */}
+{/* 2. 2列タイル比較ボード */}
 <View style={styles.board}>
 {cards.map((card) => {
 const pt = calcPt(price, card.rate, card.limit);
@@ -101,6 +65,7 @@ style={[styles.cardName, {color: isWinner ? '#000' : '#888'}]}
 value={card.name}
 onChangeText={(v) => updateCard(card.id, 'name', v)}
 />
+
 <View style={styles.inputArea}>
 <View style={styles.inputBox}>
 <Text style={[styles.inputLabel, {color: isWinner ? '#333' : '#555'}]}>還元率%</Text>
@@ -119,9 +84,11 @@ value={card.limit}
 onChangeText={(v) => updateCard(card.id, 'limit', v)}
 keyboardType="numeric"
 placeholder="∞"
+placeholderTextColor={isWinner ? '#666' : '#333'}
 />
 </View>
 </View>
+
 <View style={[styles.resBox, {backgroundColor: isWinner ? 'rgba(0,0,0,0.1)' : '#000'}]}>
 <Text style={[styles.resPt, {color: isWinner ? '#000' : '#CCFF00'}]}>{Math.floor(pt).toLocaleString()}</Text>
 <Text style={[styles.resLabel, {color: isWinner ? '#333' : '#666'}]}>pt獲得</Text>
@@ -131,56 +98,90 @@ placeholder="∞"
 })}
 </View>
 
-{/* 解説・免責事項（法的ガード） */}
+{/* 3. 広告エリア */}
+<View style={styles.mainAdArea}>
+<View style={styles.adBadge}><Text style={styles.adBadgeText}>PR</Text></View>
+<Text style={styles.adHugeText}>【注目】ポイ活勢が絶賛する最強クレカ</Text>
+<View style={styles.adDummyImg}><Text style={{color: '#444'}}>AD IMAGE</Text></View>
+<TouchableOpacity style={styles.adBtn}><Text style={styles.adBtnText}>詳細を確認して特典を受ける</Text></TouchableOpacity>
+</View>
+
+{/* 4. 審査対策 ＆ 免責事項（法的防衛強化版） */}
 <View style={styles.trustSection}>
 <Text style={styles.articleTitle}>🤔 なぜ「還元上限」の計算が不可欠なのか</Text>
 <Text style={styles.articleText}>
-多くのキャンペーンには「付与上限」という罠があります。例えば20%還元でも上限が1,000円なら、5,000円以上の決済では還元率は実質下がります。本ツールは、高額決済で損をしないための必須比較ツールです。
+多くのキャッシュバックキャンペーンには必ずと言っていいほど「付与上限」が設定されています。{"\n"}{"\n"}
+例えば「10%還元・上限500ポイント」という一見魅力的なキャンペーンの場合、5,000円までの買い物なら最大効率ですが、それを超えた分には1ポイントも付きません。一方、上限のない「1.5%還元」なら、高額決済になるほど獲得ポイントは逆転し、最終的な実質価格に大きな差が生まれます。{"\n"}{"\n"}
+本ツールは、複数のキャンペーンを横断的に比較し、あなたが「その買い物で本当に使うべき決済手段」を瞬時に導き出すために設計されました。
 </Text>
 
 <View style={styles.divider} />
 
-<Text style={styles.sectionHeading}>⚠️ 免責事項・ご利用規約</Text>
+<Text style={styles.sectionHeading}>💡 主要サービスの還元率目安</Text>
+<View style={styles.kBox}>
+{FAMOUS_SERVICES.map((s, i) => (
+<Text key={i} style={styles.kText}>・{s.name}: {s.rate}%{s.limit && `(上限${s.limit})`}</Text>
+))}
+</View>
+
+<View style={styles.divider} />
+
+<Text style={styles.sectionHeading}>⚠️ 免責事項・ご利用上の注意</Text>
 <Text style={styles.trustText}>
-【1. 正確性】本アプリの結果はシミュレーションであり、実際の還元を保証しません。必ず公式サイトを確認してください。{"\n"}{"\n"}
-【2. 損害への責任】本アプリの利用により生じた損害（ポイント付与漏れ、計算誤り等）について、運営者は一切の責任を負いません。自己責任で利用してください。{"\n"}{"\n"}
-【3. 広告について】本アプリは提携広告を含みます。広告先での取引はユーザーと広告主の間で行われるものです。
+【1. 情報の正確性について】{"\n"}
+本アプリで提供される計算結果はシミュレーションであり、実際の還元額を保証するものではありません。キャンペーン条件は頻繁に変更されるため、必ず決済前に各公式サイト等で最新情報を確認してください。{"\n"}{"\n"}
+【2. 損害への責任について】{"\n"}
+本ツールの計算誤りや掲載情報の誤謬、キャンペーン内容の変更等によってユーザーに生じたいかなる損害についても、開発者および運営事務局は一切の責任を負いません。本ツールを利用した時点で、本免責事項に同意したものとみなされます。
 </Text>
 <Text style={styles.copyright}>© 2026 P-Checker PRO 運営事務局</Text>
 </View>
 </ScrollView>
+
+{/* 固定バナー広告 */}
+<View style={styles.bottomAd}>
+<Text style={styles.bottomAdText}>AD: ポイント還元を爆上げする裏技公開中</Text>
+</View>
 </SafeAreaView>
 );
 }
 
 const styles = StyleSheet.create({
 container: { flex: 1, backgroundColor: '#000' },
-fixedHeader: { padding: 15, borderBottomWidth: 1, borderBottomColor: '#222' },
-headerTitle: { color: '#CCFF00', fontSize: 18, fontWeight: '900', textAlign: 'center', letterSpacing: 2 },
-scroll: { paddingBottom: 50 },
-priceSection: { backgroundColor: '#111', padding: 25, alignItems: 'center', marginBottom: 10 },
-label: { color: '#666', fontSize: 12, marginBottom: 8 },
+fixedHeader: { padding: 10, borderBottomWidth: 1, borderBottomColor: '#222', backgroundColor: '#000' },
+headerTitle: { color: '#CCFF00', fontSize: 16, fontWeight: '900', textAlign: 'center' },
+scroll: { paddingBottom: 100 },
+priceSection: { backgroundColor: '#111', padding: 15, alignItems: 'center', marginBottom: 10 },
+label: { color: '#666', fontSize: 11, marginBottom: 5 },
 priceInputWrapper: { flexDirection: 'row', alignItems: 'baseline' },
-priceInput: { color: '#fff', fontSize: 42, fontWeight: '900', textAlign: 'center', minWidth: 150 },
-yenText: { color: '#fff', fontSize: 20, marginLeft: 8 },
-affiliateBtn: { backgroundColor: '#CCFF00', margin: 12, padding: 18, borderRadius: 15, alignItems: 'center' },
-affiliateBtnText: { color: '#000', fontWeight: '900', fontSize: 15 },
+priceInput: { color: '#fff', fontSize: 32, fontWeight: '900', textAlign: 'center', minWidth: 120 },
+yenText: { color: '#fff', fontSize: 16, marginLeft: 5 },
 board: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 10 },
 card: { width: '48.5%', backgroundColor: '#111', padding: 12, borderRadius: 18, marginBottom: 12, borderWidth: 1, borderColor: '#222' },
 winnerCard: { backgroundColor: '#CCFF00', borderColor: '#CCFF00' },
-cardName: { fontSize: 15, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
+cardName: { fontSize: 14, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
 inputArea: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
 inputBox: { width: '45%' },
 inputLabel: { fontSize: 9, fontWeight: 'bold', marginBottom: 4 },
-cardInput: { fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' },
+cardInput: { fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)', paddingVertical: 2 },
 resBox: { borderRadius: 12, padding: 8, alignItems: 'center' },
-resPt: { fontSize: 26, fontWeight: '900' },
-resLabel: { fontSize: 10 },
-trustSection: { padding: 20, backgroundColor: '#080808', marginTop: 20 },
-articleTitle: { color: '#CCFF00', fontSize: 16, fontWeight: 'bold', marginBottom: 12 },
-articleText: { color: '#999', fontSize: 13, lineHeight: 22, marginBottom: 20 },
-sectionHeading: { color: '#888', fontSize: 12, fontWeight: 'bold', marginBottom: 10 },
-trustText: { color: '#555', fontSize: 10, lineHeight: 18, textAlign: 'justify' },
+resPt: { fontSize: 24, fontWeight: '900' },
+resLabel: { fontSize: 9 },
+mainAdArea: { backgroundColor: '#111', margin: 10, padding: 20, borderRadius: 20, alignItems: 'center', borderWidth: 1, borderColor: '#333' },
+adBadge: { position: 'absolute', top: 10, left: 10, backgroundColor: '#333', padding: 3, borderRadius: 4 },
+adBadgeText: { color: '#999', fontSize: 8 },
+adHugeText: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
+adDummyImg: { width: '100%', height: 100, backgroundColor: '#222', borderRadius: 10, marginBottom: 15, justifyContent: 'center', alignItems: 'center' },
+adBtn: { backgroundColor: '#CCFF00', width: '100%', padding: 12, borderRadius: 10, alignItems: 'center' },
+adBtnText: { color: '#000', fontWeight: 'bold', fontSize: 14 },
+trustSection: { padding: 20, backgroundColor: '#050505' },
+sectionHeading: { color: '#888', fontSize: 11, fontWeight: 'bold', marginBottom: 10 },
+kBox: { marginBottom: 10 },
+kText: { color: '#555', fontSize: 11, marginBottom: 5 },
 divider: { height: 1, backgroundColor: '#222', marginVertical: 20 },
-copyright: { textAlign: 'center', color: '#333', fontSize: 10, marginTop: 40 },
+articleTitle: { color: '#CCFF00', fontSize: 15, fontWeight: 'bold', marginBottom: 10 },
+articleText: { color: '#666', fontSize: 12, lineHeight: 18 },
+trustText: { color: '#444', fontSize: 10, lineHeight: 16 },
+copyright: { textAlign: 'center', color: '#222', fontSize: 9, marginTop: 30 },
+bottomAd: { height: 50, backgroundColor: '#1A1A1A', borderTopWidth: 1, borderTopColor: '#333', justifyContent: 'center', alignItems: 'center', position: 'absolute', bottom: 0, left: 0, right: 0 },
 });
+
