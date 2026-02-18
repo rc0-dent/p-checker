@@ -1,45 +1,8 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P-Checker PRO</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<style>
-body { margin: 0; background-color: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-#root { min-height: 100vh; display: flex; flex-direction: column; }
-</style>
-</head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useEffect } = React;
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, ScrollView, SafeAreaView, TouchableOpacity, Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// UI部品のシミュレーション
-const View = ({ style, ...props }) => <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', boxSizing: 'border-box', ...style }} {...props} />;
-const Text = ({ style, ...props }) => <span style={{ display: 'inline-block', ...style }} {...props} />;
-const TextInput = ({ style, value, onChangeText, ...props }) => (
-<input
-style={{ background: 'transparent', border: 'none', outline: 'none', color: 'inherit', font: 'inherit', width: '100%', ...style }}
-value={value}
-onChange={(e) => onChangeText(e.target.value)}
-{...props}
-/>
-);
-const ScrollView = ({ contentContainerStyle, style, ...props }) => <div style={{ overflowY: 'auto', flex: 1, ...style, ...contentContainerStyle }} {...props} />;
-const SafeAreaView = ({ style, ...props }) => <div style={{ flex: 1, display: 'flex', flexDirection: 'column', ...style }} {...props} />;
-const TouchableOpacity = ({ style, onPress, ...props }) => <div style={{ cursor: 'pointer', ...style }} onClick={onPress} {...props} />;
-const StyleSheet = { create: (styles) => styles };
-const Linking = { openURL: (url) => window.open(url, '_blank') };
-const AsyncStorage = {
-getItem: async (key) => localStorage.getItem(key),
-setItem: async (key, val) => localStorage.setItem(key, val)
-};
-
-// ここから下に「完全版コード」の中身を貼り付け
-
+// --- 設定エリア：A8.netで取得した自分のリンクをここに貼る ---
 const AD_URLS = {
 '楽天ペイ等': 'https://www.rakuten-card.co.jp/',
 '三井住友NL': 'https://www.smbc-card.com/',
@@ -47,7 +10,7 @@ const AD_URLS = {
 'default': 'https://www.google.com'
 };
 
-function App() {
+export default function App() {
 const [price, setPrice] = useState('10000');
 const [cards, setCards] = useState([
 { id: 1, name: 'PayPay等', rate: '0.5', limit: '' },
@@ -58,22 +21,27 @@ const [cards, setCards] = useState([
 { id: 6, name: '案6', rate: '0.0', limit: '' },
 ]);
 
+// 【保存機能】アプリ起動時にデータを読み込む
 useEffect(() => {
 const loadData = async () => {
 try {
 const saved = await AsyncStorage.getItem('@p_checker_data_v1');
 if (saved !== null) setCards(JSON.parse(saved));
-} catch (e) { console.error(e); }
+} catch (e) { console.error("Load error", e); }
 };
 loadData();
 }, []);
 
+// 【保存機能】入力のたびに自動保存
 const updateCard = async (id, field, value) => {
 const newCards = cards.map(c => c.id === id ? { ...c, [field]: value } : c);
 setCards(newCards);
+try {
 await AsyncStorage.setItem('@p_checker_data_v1', JSON.stringify(newCards));
+} catch (e) { console.error("Save error", e); }
 };
 
+// ポイント計算ロジック
 const calcPt = (p, r, l) => {
 const numP = parseFloat(p) || 0;
 const numR = parseFloat(r) || 0;
@@ -88,84 +56,131 @@ const winnerName = maxPt > 0 ? cards[winnerIndex].name : null;
 
 return (
 <SafeAreaView style={styles.container}>
-<View style={styles.fixedHeader}><Text style={styles.headerTitle}>P-Checker PRO</Text></View>
+<View style={styles.fixedHeader}>
+<Text style={styles.headerTitle}>P-Checker PRO</Text>
+</View>
+
 <ScrollView contentContainerStyle={styles.scroll}>
+{/* 金額入力 */}
 <View style={styles.priceSection}>
 <Text style={styles.label}>買い物金額</Text>
 <View style={styles.priceInputWrapper}>
-<TextInput style={styles.priceInput} value={price} onChangeText={setPrice} />
+<TextInput
+style={styles.priceInput}
+keyboardType="numeric"
+value={price}
+onChangeText={setPrice}
+placeholder="0"
+placeholderTextColor="#333"
+/>
 <Text style={styles.yenText}>円</Text>
 </View>
 </View>
+
+{/* 動的アフィリエイトボタン */}
 {winnerName && (
-<TouchableOpacity style={styles.affiliateBtn} onPress={() => Linking.openURL(AD_URLS[winnerName] || AD_URLS.default)}>
-<Text style={styles.affiliateBtnText}>🔥 {winnerName} で最大還元を受ける</Text>
+<TouchableOpacity
+style={styles.affiliateBtn}
+onPress={() => Linking.openURL(AD_URLS[winnerName] || AD_URLS.default)}
+>
+<Text style={styles.affiliateBtnText}>
+🔥 {winnerName} で最大還元を受ける
+</Text>
 </TouchableOpacity>
 )}
-<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', padding: '0 10px' }}>
+
+{/* 比較ボード */}
+<View style={styles.board}>
 {cards.map((card) => {
 const pt = calcPt(price, card.rate, card.limit);
 const isWinner = pt === maxPt && pt > 0;
 return (
-<View key={card.id} style={{ ...styles.card, ...(isWinner ? styles.winnerCard : {}) }}>
-<TextInput style={{ ...styles.cardName, color: isWinner ? '#000' : '#888' }} value={card.name} onChangeText={(v) => updateCard(card.id, 'name', v)} />
+<View key={card.id} style={[styles.card, isWinner && styles.winnerCard]}>
+<TextInput
+style={[styles.cardName, {color: isWinner ? '#000' : '#888'}]}
+value={card.name}
+onChangeText={(v) => updateCard(card.id, 'name', v)}
+/>
 <View style={styles.inputArea}>
 <View style={styles.inputBox}>
-<Text style={{ ...styles.inputLabel, color: isWinner ? '#333' : '#555' }}>還元率%</Text>
-<TextInput style={{ ...styles.cardInput, color: isWinner ? '#000' : '#fff' }} value={card.rate} onChangeText={(v) => updateCard(card.id, 'rate', v)} />
+<Text style={[styles.inputLabel, {color: isWinner ? '#333' : '#555'}]}>還元率%</Text>
+<TextInput
+style={[styles.cardInput, {color: isWinner ? '#000' : '#fff'}]}
+value={card.rate}
+onChangeText={(v) => updateCard(card.id, 'rate', v)}
+keyboardType="numeric"
+/>
 </View>
 <View style={styles.inputBox}>
-<Text style={{ ...styles.inputLabel, color: isWinner ? '#333' : '#555' }}>上限pt</Text>
-<TextInput style={{ ...styles.cardInput, color: isWinner ? '#000' : '#fff' }} value={card.limit} onChangeText={(v) => updateCard(card.id, 'limit', v)} placeholder="∞" />
+<Text style={[styles.inputLabel, {color: isWinner ? '#333' : '#555'}]}>上限pt</Text>
+<TextInput
+style={[styles.cardInput, {color: isWinner ? '#000' : '#fff'}]}
+value={card.limit}
+onChangeText={(v) => updateCard(card.id, 'limit', v)}
+keyboardType="numeric"
+placeholder="∞"
+/>
 </View>
 </View>
-<View style={{ ...styles.resBox, backgroundColor: isWinner ? 'rgba(0,0,0,0.1)' : '#000' }}>
-<Text style={{ ...styles.resPt, color: isWinner ? '#000' : '#CCFF00' }}>{Math.floor(pt).toLocaleString()}</Text>
-<Text style={{ ...styles.resLabel, color: isWinner ? '#333' : '#666' }}>pt獲得</Text>
+<View style={[styles.resBox, {backgroundColor: isWinner ? 'rgba(0,0,0,0.1)' : '#000'}]}>
+<Text style={[styles.resPt, {color: isWinner ? '#000' : '#CCFF00'}]}>{Math.floor(pt).toLocaleString()}</Text>
+<Text style={[styles.resLabel, {color: isWinner ? '#333' : '#666'}]}>pt獲得</Text>
 </View>
 </View>
 );
 })}
-</div>
+</View>
+
+{/* 解説・免責事項（法的ガード） */}
 <View style={styles.trustSection}>
-<Text style={styles.articleTitle}>🤔 なぜ計算が必要なのか</Text>
-<Text style={styles.articleText}>付与上限を超えると還元率は下がります。損をしないための比較ツールです。</Text>
-<Text style={styles.trustText}>免責事項：本結果は保証されません。自己責任で利用してください。</Text>
+<Text style={styles.articleTitle}>🤔 なぜ「還元上限」の計算が不可欠なのか</Text>
+<Text style={styles.articleText}>
+多くのキャンペーンには「付与上限」という罠があります。例えば20%還元でも上限が1,000円なら、5,000円以上の決済では還元率は実質下がります。本ツールは、高額決済で損をしないための必須比較ツールです。
+</Text>
+
+<View style={styles.divider} />
+
+<Text style={styles.sectionHeading}>⚠️ 免責事項・ご利用規約</Text>
+<Text style={styles.trustText}>
+【1. 正確性】本アプリの結果はシミュレーションであり、実際の還元を保証しません。必ず公式サイトを確認してください。{"\n"}{"\n"}
+【2. 損害への責任】本アプリの利用により生じた損害（ポイント付与漏れ、計算誤り等）について、運営者は一切の責任を負いません。自己責任で利用してください。{"\n"}{"\n"}
+【3. 広告について】本アプリは提携広告を含みます。広告先での取引はユーザーと広告主の間で行われるものです。
+</Text>
+<Text style={styles.copyright}>© 2026 P-Checker PRO 運営事務局</Text>
 </View>
 </ScrollView>
 </SafeAreaView>
 );
 }
 
-const styles = {
-container: { backgroundColor: '#000' },
-fixedHeader: { padding: '15px', borderBottom: '1px solid #222', textAlign: 'center' },
-headerTitle: { color: '#CCFF00', fontSize: '18px', fontWeight: '900' },
-priceSection: { backgroundColor: '#111', padding: '25px', textAlign: 'center' },
-label: { color: '#666', fontSize: '12px' },
-priceInputWrapper: { display: 'flex', justifyContent: 'center', alignItems: 'baseline' },
-priceInput: { color: '#fff', fontSize: '42px', fontWeight: '900', textAlign: 'center', width: '150px' },
-yenText: { color: '#fff', fontSize: '20px' },
-affiliateBtn: { backgroundColor: '#CCFF00', margin: '12px', padding: '18px', borderRadius: '15px', textAlign: 'center' },
-affiliateBtnText: { color: '#000', fontWeight: '900' },
-card: { width: '48%', backgroundColor: '#111', padding: '12px', borderRadius: '18px', marginBottom: '12px', border: '1px solid #222' },
+const styles = StyleSheet.create({
+container: { flex: 1, backgroundColor: '#000' },
+fixedHeader: { padding: 15, borderBottomWidth: 1, borderBottomColor: '#222' },
+headerTitle: { color: '#CCFF00', fontSize: 18, fontWeight: '900', textAlign: 'center', letterSpacing: 2 },
+scroll: { paddingBottom: 50 },
+priceSection: { backgroundColor: '#111', padding: 25, alignItems: 'center', marginBottom: 10 },
+label: { color: '#666', fontSize: 12, marginBottom: 8 },
+priceInputWrapper: { flexDirection: 'row', alignItems: 'baseline' },
+priceInput: { color: '#fff', fontSize: 42, fontWeight: '900', textAlign: 'center', minWidth: 150 },
+yenText: { color: '#fff', fontSize: 20, marginLeft: 8 },
+affiliateBtn: { backgroundColor: '#CCFF00', margin: 12, padding: 18, borderRadius: 15, alignItems: 'center' },
+affiliateBtnText: { color: '#000', fontWeight: '900', fontSize: 15 },
+board: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 10 },
+card: { width: '48.5%', backgroundColor: '#111', padding: 12, borderRadius: 18, marginBottom: 12, borderWidth: 1, borderColor: '#222' },
 winnerCard: { backgroundColor: '#CCFF00', borderColor: '#CCFF00' },
-cardName: { fontSize: '15px', fontWeight: 'bold', textAlign: 'center', marginBottom: '12px' },
-inputArea: { display: 'flex', justifyContent: 'space-between', marginBottom: '12px' },
+cardName: { fontSize: 15, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
+inputArea: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
 inputBox: { width: '45%' },
-inputLabel: { fontSize: '9px' },
-cardInput: { fontSize: '18px', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)' },
-resBox: { borderRadius: '12px', padding: '8px', textAlign: 'center' },
-resPt: { fontSize: '26px', fontWeight: '900' },
-resLabel: { fontSize: '10px' },
-trustSection: { padding: '20px', color: '#999' },
-articleTitle: { color: '#CCFF00', fontWeight: 'bold' },
-articleText: { fontSize: '13px', margin: '10px 0' },
-trustText: { fontSize: '10px' }
-};
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
-</script>
-</body>
-</html>
+inputLabel: { fontSize: 9, fontWeight: 'bold', marginBottom: 4 },
+cardInput: { fontSize: 18, fontWeight: 'bold', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' },
+resBox: { borderRadius: 12, padding: 8, alignItems: 'center' },
+resPt: { fontSize: 26, fontWeight: '900' },
+resLabel: { fontSize: 10 },
+trustSection: { padding: 20, backgroundColor: '#080808', marginTop: 20 },
+articleTitle: { color: '#CCFF00', fontSize: 16, fontWeight: 'bold', marginBottom: 12 },
+articleText: { color: '#999', fontSize: 13, lineHeight: 22, marginBottom: 20 },
+sectionHeading: { color: '#888', fontSize: 12, fontWeight: 'bold', marginBottom: 10 },
+trustText: { color: '#555', fontSize: 10, lineHeight: 18, textAlign: 'justify' },
+divider: { height: 1, backgroundColor: '#222', marginVertical: 20 },
+copyright: { textAlign: 'center', color: '#333', fontSize: 10, marginTop: 40 },
+});
