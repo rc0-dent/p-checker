@@ -3,79 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P-checker | ポイ活還元率比較・上限判定ツール</title>
+<title>P-checker | ポイ活比較・自動判定</title>
 <style>
-/* 白背景・高コントラストデザイン */
-body {
-background-color: #ffffff;
-font-family: 'Helvetica Neue', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
-color: #1a1a1a; /* 文字を濃い黒に */
-margin: 0; padding: 15px;
-display: flex; justify-content: center;
-}
+body { background-color: #ffffff; font-family: sans-serif; color: #000000; margin: 0; padding: 15px; display: flex; justify-content: center; }
 .container { width: 100%; max-width: 500px; }
-.header { color: #000000; font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 20px; letter-spacing: -1px; }
+.header { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 20px; }
 
-.input-section { margin-bottom: 25px; background: #f1f3f5; padding: 25px; border-radius: 20px; border: 2px solid #e9ecef; }
-.label-main { color: #495057; font-size: 14px; font-weight: 800; margin-bottom: 10px; display: block; text-align: center; }
+/* 入力エリア */
+.input-section { margin-bottom: 25px; background: #f8f9fa; padding: 25px; border-radius: 20px; border: 2px solid #000; }
+.label-main { color: #000; font-size: 14px; font-weight: 900; margin-bottom: 10px; display: block; text-align: center; }
 
-/* スピンボタン非表示 */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-input[type="number"] { -moz-appearance: textfield; }
+.price-input { background: transparent; border: none; border-bottom: 3px solid #000; color: #000; font-size: 40px; font-weight: 900; width: 100%; outline: none; text-align: center; }
 
-.price-input {
-background: transparent; border: none; border-bottom: 3px solid #ced4da;
-color: #000000; font-size: 40px; font-weight: 900; width: 100%; outline: none; text-align: center;
-}
-.price-input:focus { border-color: #00b894; }
-
+/* 2列グリッド */
 .reward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-.reward-item {
-background: #ffffff; padding: 18px 12px; border-radius: 20px;
-border: 2px solid #dee2e6; text-align: center; transition: all 0.3s ease;
-}
+.reward-item { background: #ffffff; padding: 18px 12px; border-radius: 20px; border: 2px solid #dee2e6; text-align: center; transition: 0.3s; }
 
-/* 最もお得な項目のハイライト（目に優しいがはっきり分かる色） */
-.reward-item.best {
-border-color: #00b894; background-color: #e6fffa;
-box-shadow: 0 5px 20px rgba(0, 184, 148, 0.2); transform: translateY(-3px);
-}
+/* 最得項目のハイライト */
+.reward-item.best { border-color: #00b894; background-color: #e6fffa; box-shadow: 0 5px 20px rgba(0, 184, 148, 0.3); transform: translateY(-3px); }
 
-/* サービス名入力（濃い文字） */
-.name-input {
-width: 95%; border: none; border-bottom: 2px solid #dee2e6;
-font-size: 15px; font-weight: 900; text-align: center; color: #000000;
-margin-bottom: 12px; outline: none; padding-bottom: 5px; background: transparent;
-}
-.name-input::placeholder { color: #adb5bd; }
+.name-input { width: 95%; border: none; border-bottom: 2px solid #000; font-size: 15px; font-weight: 900; text-align: center; color: #000; margin-bottom: 12px; outline: none; background: transparent; }
 
 .setting-group { display: flex; flex-direction: column; gap: 10px; }
-.setting-header { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; }
-.setting-label { font-size: 11px; color: #343a40; font-weight: 700; } /* ラベルを濃く太く */
-.guide-text { font-size: 10px; color: #087f5b; font-weight: 800; } /* 目安をはっきりした緑に */
+.setting-header { display: flex; justify-content: space-between; align-items: center; }
+.setting-label { font-size: 11px; color: #000; font-weight: 900; }
+.guide-text { font-size: 10px; color: #087f5b; font-weight: 900; }
 
-.mini-input {
-background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 10px;
-color: #000000; font-size: 16px; font-weight: 700; padding: 8px; text-align: center; outline: none;
-}
-.mini-input:focus { border-color: #00b894; background: #ffffff; }
+.mini-input { background: #f8f9fa; border: 2px solid #000; border-radius: 10px; color: #000; font-size: 16px; font-weight: 900; padding: 8px; text-align: center; outline: none; }
 
-.res-box { margin-top: 15px; border-top: 2px solid #f1f3f5; padding-top: 12px; }
-.reward-amount { font-size: 26px; font-weight: 900; color: #000000; }
-.unit { font-size: 13px; color: #495057; font-weight: 700; }
+.res-box { margin-top: 15px; border-top: 2px solid #000; padding-top: 12px; }
+.reward-amount { font-size: 26px; font-weight: 900; color: #000; }
+.unit { font-size: 13px; font-weight: 900; }
 
-.btn-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 45px; }
-.btn-rakuten { background-color: #bf0000; color: #ffffff; padding: 20px; border-radius: 15px; font-weight: 900; text-decoration: none; text-align: center; font-size: 17px; box-shadow: 0 4px 12px rgba(191, 0, 0, 0.2); }
+.btn-rakuten { display: block; background-color: #bf0000; color: #fff; padding: 20px; border-radius: 15px; font-weight: 900; text-decoration: none; text-align: center; font-size: 17px; margin-bottom: 40px; }
 
-/* テキストセクションの文字を濃く */
-.text-section { text-align: left; background: #ffffff; padding: 25px; border-radius: 20px; border-left: 6px solid #00b894; margin-bottom: 35px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-.text-section h3 { color: #000000; font-size: 19px; font-weight: 900; margin: 0 0 15px 0; }
-.text-section p { font-size: 15px; color: #212529; font-weight: 500; line-height: 1.8; }
+.text-section { background: #fff; padding: 25px; border-radius: 20px; border-left: 6px solid #00b894; margin-bottom: 35px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.text-section h3 { font-size: 19px; font-weight: 900; margin-bottom: 15px; }
+.text-section p { font-size: 15px; color: #000; line-height: 1.8; }
 
-/* 免責事項を読みやすく */
-.legal-section { text-align: left; font-size: 13px; color: #495057; border-top: 2px solid #dee2e6; padding-top: 30px; margin-bottom: 60px; line-height: 1.8; }
-.legal-section h4 { margin: 0 0 15px 0; color: #212529; font-size: 16px; font-weight: 900; }
+.legal-section { font-size: 13px; color: #333; border-top: 2px solid #000; padding-top: 30px; margin-bottom: 60px; line-height: 1.8; }
+.legal-section h4 { font-size: 16px; font-weight: 900; }
 </style>
 </head>
 <body>
@@ -84,8 +53,8 @@ color: #000000; font-size: 16px; font-weight: 700; padding: 8px; text-align: cen
 <div class="header">P-checker</div>
 
 <div class="input-section">
-<span class="label-main">購入予定金額 (¥)</span>
-<input type="number" id="price" class="price-input" value="10000" oninput="update()">
+<span class="label-main">購入予定金額を入力 (¥)</span>
+<input type="number" id="price" class="price-input" value="10000" oninput="updateAll()">
 </div>
 
 <datalist id="service-list">
@@ -96,24 +65,20 @@ color: #000000; font-size: 16px; font-weight: 700; padding: 8px; text-align: cen
 <option value="dカード">
 <option value="Amazonプライム">
 <option value="au PAY カード">
-<option value="JCB W">
 </datalist>
 
-<div class="reward-grid" id="grid">
-</div>
+<div class="reward-grid" id="grid"></div>
 
-<div class="btn-group">
-<a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F" target="_blank" class="btn-rakuten">楽天カード 公式サイトを確認する</a>
-</div>
+<a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F" target="_blank" class="btn-rakuten">楽天カード 公式サイトを確認</a>
 
 <div class="text-section">
 <h3>サイト制作目的</h3>
-<p>現代のキャッシュレス社会では、各決済サービスが競うように多様な還元プログラムを展開していますが、その実態は「月間獲得上限」や「特定条件」といった複雑な制約に縛られています。多くの消費者が、表面上の還元率に惑わされ、実際には上限に達してポイントを取りこぼしている現状があります。<br>当サイト「P-checker」は、そのような不透明な還元構造を打破し、誰でも一瞬で「実質的な還元額」を比較・可視化できるように設計されました。個人の利用環境に合わせて設定を自由にカスタマイズし、賢く、確実に利益を最大化するための羅針盤となることが、本サイトの使命です。</p>
+<p>当サイトは、各キャッシュレス決済が設定している「還元率」と「獲得上限」の複雑な組み合わせを、誰でも簡単にシミュレーションできるように開発されました。特に、大きな買い物をした際に「実は上限を超えてポイントがもらえていなかった」という失敗を防ぐため、金額に応じたリアルタイムの比較を可能にしています。消費者の皆様が、自分自身の利用状況に合わせて設定をカスタマイズし、最も賢い支払い方法を選択できる環境を提供します。</p>
 </div>
 
 <div class="legal-section">
 <h4>免責事項およびご利用規約</h4>
-当サイト「P-checker」が提供する計算結果、還元率、各種サービス情報は、細心の注意を払って作成・管理しておりますが、情報の正確性、完全性、あるいは特定の時点における最新性を保証するものではありません。各金融機関や決済代行会社による規約改定、キャンペーン内容の変更、上限条件の更新等により、実際の獲得ポイントと本サイトの算出結果が乖離する可能性があります。<br><br>利用者様が本サイトの情報に基づいて行った判断および行動の結果生じた、いかなる直接的・間接的・付随的損害（金銭的損失、機会損失、トラブル等）についても、当サイト管理者は一切の責任を負いかねます。必ずサービス提供元の公式サイトにて最新情報を確認した上で、ご自身の責任においてご利用ください。また、当サイトはアフィリエイト広告を掲載しており、リンク先での成約等により運営費を得る場合があります。
+当サイトの情報は可能な限り正確性を期していますが、サービス改定やキャンペーン変更により実際の還元率と異なる場合があります。計算結果はあくまでシミュレーションであり、実際の獲得ポイントを保証するものではありません。利用によって生じた損害について管理者は一切の責任を負いません。必ず各社の最新情報を公式サイト等でご確認の上、自己責任でご利用ください。
 </div>
 </div>
 
@@ -124,30 +89,29 @@ const masterData = {
 "三井住友(タッチ)": {rate: 7.0, limit: 1000},
 "PayPayカード": {rate: 1.0, limit: ""},
 "dカード": {rate: 1.0, limit: ""},
-"Amazonプライム": {rate: 2.0, limit: ""},
-"au PAY カード": {rate: 1.0, limit: ""},
-"JCB W": {rate: 1.0, limit: ""}
+"Amazonプライム": {rate: 2.0, limit: ""}
 };
+
+const initialNames = ["楽天カード", "三井住友(通常)", "三井住友(タッチ)", "PayPayカード", "dカード", "Amazonプライム"];
 
 const grid = document.getElementById('grid');
 for (let i = 1; i <= 6; i++) {
 grid.innerHTML += `
 <div class="reward-item" id="item${i}">
-<input type="text" id="name${i}" class="name-input" list="service-list" placeholder="サービス名を入力" onchange="autoFill(${i})" oninput="update()">
+<input type="text" id="name${i}" class="name-input" list="service-list" value="${initialNames[i-1]}" oninput="checkAndFill(${i})">
 <div class="setting-group">
 <div class="setting-header"><span class="setting-label">還元率 (%)</span><span id="guide-r${i}" class="guide-text"></span></div>
-<input type="number" id="rate${i}" class="mini-input" value="0.0" step="0.5" oninput="update()">
+<input type="number" id="rate${i}" class="mini-input" step="0.5" oninput="updateAll()">
 <div class="setting-header"><span class="setting-label">上限 (pt)</span><span id="guide-l${i}" class="guide-text"></span></div>
-<input type="number" id="limit${i}" class="mini-input" placeholder="無制限" oninput="update()">
+<input type="number" id="limit${i}" class="mini-input" placeholder="無制限" oninput="updateAll()">
 </div>
-<div class="res-box">
-<div class="reward-amount"><span id="val${i}">0</span><span class="unit">pt</span></div>
-</div>
+<div class="res-box"><div class="reward-amount"><span id="val${i}">0</span><span class="unit">pt</span></div></div>
 </div>
 `;
 }
 
-function autoFill(idx) {
+// 入力した瞬間にマスターデータと照合して自動セット
+function checkAndFill(idx) {
 const name = document.getElementById('name' + idx).value;
 const data = masterData[name];
 if (data) {
@@ -155,28 +119,22 @@ document.getElementById('rate' + idx).value = data.rate;
 document.getElementById('limit' + idx).value = data.limit;
 document.getElementById('guide-r' + idx).innerText = "目安: " + data.rate + "%";
 document.getElementById('guide-l' + idx).innerText = data.limit ? "目安: " + data.limit : "目安: 無制限";
-} else {
-document.getElementById('guide-r' + idx).innerText = "";
-document.getElementById('guide-l' + idx).innerText = "";
 }
-update();
+updateAll();
 }
 
-function update() {
+function updateAll() {
 const p = parseFloat(document.getElementById('price').value) || 0;
 let results = [];
-
 for (let i = 1; i <= 6; i++) {
 const r = parseFloat(document.getElementById('rate' + i).value) || 0;
 const limVal = document.getElementById('limit' + i).value;
 const l = limVal === "" ? Infinity : parseFloat(limVal);
 const res = Math.floor(Math.min(p * (r / 100), l));
-
 document.getElementById('val' + i).innerText = res.toLocaleString();
 results.push({ index: i, val: res });
 document.getElementById('item' + i).classList.remove('best');
 }
-
 const maxVal = Math.max(...results.map(r => r.val));
 if (maxVal > 0) {
 results.filter(r => r.val === maxVal).forEach(best => {
@@ -184,8 +142,9 @@ document.getElementById('item' + best.index).classList.add('best');
 });
 }
 }
-update();
-</script>
 
+// 初期セット分の数字を反映
+for(let i=1; i<=6; i++) { checkAndFill(i); }
+</script>
 </body>
 </html>
