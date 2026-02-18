@@ -3,139 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P-checker | ポイ活還元率計算ツール</title>
+<title>P-checker | 最強還元判定ツール</title>
 <style>
-/* 全体：黒ベースのプロフェッショナルデザイン */
 body {
 background-color: #000;
-font-family: 'Inter', -apple-system, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-color: #fff;
-margin: 0;
-padding: 20px;
-line-height: 1.6;
-display: flex;
-justify-content: center;
+font-family: 'Inter', -apple-system, sans-serif;
+color: #fff; margin: 0; padding: 15px;
+display: flex; justify-content: center;
 }
-.container { width: 100%; max-width: 450px; }
+.container { width: 100%; max-width: 480px; }
 
-/* サイト名ロゴ */
-.header { color: #CCFF00; font-size: 42px; font-weight: 900; text-align: center; margin-bottom: 5px; letter-spacing: -1px; }
-.sub-header { color: #444; font-size: 14px; text-align: center; margin-bottom: 30px; font-weight: bold; }
+.header { color: #CCFF00; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 20px; }
 
-/* 入力セクション */
-.input-section { margin-bottom: 30px; background: #111; padding: 25px; border-radius: 25px; border: 1px solid #222; }
-.label { color: #CCFF00; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; text-align: center; }
+/* 金額入力（コンパクト） */
+.input-section { margin-bottom: 20px; background: #111; padding: 15px; border-radius: 20px; border: 1px solid #222; }
+.label-main { color: #888; font-size: 11px; font-weight: bold; margin-bottom: 5px; display: block; text-align: center; }
 .price-input {
 background: transparent; border: none; border-bottom: 2px solid #333;
-color: #fff; font-size: 50px; font-weight: 900; width: 100%; outline: none;
-text-align: center;
+color: #fff; font-size: 32px; font-weight: 900; width: 100%; outline: none; text-align: center;
 }
 
-/* 2列グリッド固定設定 */
+/* 2列グリッド */
 .reward-grid {
-display: grid;
-grid-template-columns: 1fr 1fr; /* 強制的に50%ずつ2列 */
-gap: 12px;
-margin-bottom: 30px;
-width: 100%;
+display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;
 }
 .reward-item {
-background: #111; padding: 15px 5px; border-radius: 18px;
-border: 1px solid #1a1a1a; text-align: center;
+background: #111; padding: 15px 10px; border-radius: 20px;
+border: 1px solid #222; text-align: center; transition: 0.3s;
 }
-.service-name { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 5px; white-space: nowrap; }
-.reward-amount { font-size: 20px; font-weight: 900; color: #fff; }
+
+/* 🏆 一番高い時のスタイル */
+.reward-item.best {
+border-color: #CCFF00;
+background-color: #CCFF00;
+box-shadow: 0 0 15px rgba(204, 255, 0, 0.4);
+}
+.reward-item.best .item-name,
+.reward-item.best .reward-amount,
+.reward-item.best .unit,
+.reward-item.best .setting-label { color: #000 !important; }
+.reward-item.best .mini-input { background: #fff; color: #000; border-color: #000; }
+
+.item-name { font-size: 13px; font-weight: bold; color: #888; margin-bottom: 8px; }
+.setting-group { display: flex; flex-direction: column; gap: 4px; }
+.setting-label { font-size: 9px; color: #555; text-align: left; margin-left: 5px; }
+.mini-input {
+background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+color: #fff; font-size: 14px; padding: 4px; text-align: center; outline: none;
+}
+
+.res-box { margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
+.reward-amount { font-size: 22px; font-weight: 900; color: #fff; }
 .unit { font-size: 11px; color: #CCFF00; margin-left: 2px; }
 
-/* アクションボタン（アフィリエイト用） */
-.btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
-.btn {
-padding: 18px; border-radius: 15px; font-weight: 800; text-decoration: none;
-text-align: center; font-size: 15px; transition: 0.3s;
-}
+/* ボタン・免責事項等 */
+.btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+.btn { padding: 18px; border-radius: 15px; font-weight: 800; text-decoration: none; text-align: center; font-size: 15px; }
 .btn-rakuten { background-color: #CCFF00; color: #000; }
-.btn-smbc { border: 1px solid #333; color: #fff; }
-.btn:active { transform: scale(0.98); }
 
-/* 制作目的セクション */
-.text-section { text-align: left; background: #0a0a0a; padding: 20px; border-radius: 15px; border-left: 3px solid #CCFF00; margin-bottom: 30px; }
-.text-section h3 { color: #CCFF00; font-size: 16px; margin: 0 0 10px 0; }
-.text-section p { font-size: 13px; color: #ccc; margin: 0; }
-
-/* 免責事項（法的保護） */
-.legal-section { text-align: left; font-size: 11px; color: #444; border-top: 1px solid #222; padding-top: 20px; margin-bottom: 40px; }
-.legal-section h4 { margin: 0 0 10px 0; color: #666; font-size: 12px; }
+.text-section { text-align: left; background: #0a0a0a; padding: 20px; border-radius: 15px; border-left: 3px solid #CCFF00; margin-bottom: 25px; }
+.text-section h3 { color: #CCFF00; font-size: 15px; margin: 0 0 8px 0; }
+.text-section p { font-size: 12px; color: #ccc; margin: 0; }
+.legal-section { text-align: left; font-size: 10px; color: #444; border-top: 1px solid #222; padding-top: 15px; }
 </style>
 </head>
 <body>
 
 <div class="container">
 <div class="header">P-checker</div>
-<div class="sub-header">SIMPLE REWARD CALCULATOR</div>
 
 <div class="input-section">
-<span class="label">購入予定金額を入力</span>
+<span class="label-main">購入金額を入力</span>
 <input type="number" id="price" class="price-input" value="10000" oninput="update()">
 </div>
 
 <div class="reward-grid">
-<div class="reward-item">
-<div class="service-name">楽天カード(通常)</div>
-<div class="reward-amount"><span id="val-1">100</span><span class="unit">pt</span></div>
+<script>
+const defaultValues = [
+{name: '楽天カード', rate: 1.0, limit: ''},
+{name: '三井住友通常', rate: 0.5, limit: ''},
+{name: '三井住友タッチ', rate: 7.0, limit: 1000},
+{name: 'PayPay', rate: 1.0, limit: ''},
+{name: 'dカード', rate: 1.0, limit: ''},
+{name: 'Amazon', rate: 2.0, limit: ''}
+];
+
+for(let i=1; i<=6; i++) {
+const d = defaultValues[i-1];
+document.write(`
+<div class="reward-item" id="item${i}">
+<div class="item-name">${d.name}</div>
+<div class="setting-group">
+<span class="setting-label">還元率 %</span>
+<input type="number" id="rate${i}" class="mini-input" value="${d.rate}" step="0.5" oninput="update()">
+<span class="setting-label">上限 pt</span>
+<input type="number" id="limit${i}" class="mini-input" value="${d.limit}" placeholder="無制限" oninput="update()">
 </div>
-<div class="reward-item">
-<div class="service-name">三井住友(通常)</div>
-<div class="reward-amount"><span id="val-2">50</span><span class="unit">pt</span></div>
+<div class="res-box">
+<div class="reward-amount"><span id="val${i}">0</span><span class="unit">pt</span></div>
 </div>
-<div class="reward-item">
-<div class="service-name">三井住友(タッチ)</div>
-<div class="reward-amount"><span id="val-3">700</span><span class="unit">pt</span></div>
 </div>
-<div class="reward-item">
-<div class="service-name">PayPayカード</div>
-<div class="reward-amount"><span id="val-4">100</span><span class="unit">pt</span></div>
-</div>
-<div class="reward-item">
-<div class="service-name">dカード</div>
-<div class="reward-amount"><span id="val-5">100</span><span class="unit">pt</span></div>
-</div>
-<div class="reward-item">
-<div class="service-name">Amazonプライム</div>
-<div class="reward-amount"><span id="val-6">200</span><span class="unit">pt</span></div>
-</div>
+`);
+}
+</script>
 </div>
 
 <div class="btn-group">
-<a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F"
-target="_blank" class="btn btn-rakuten">楽天カードを申し込む</a>
-<a href="https://www.smbc-card.com/" target="_blank" class="btn btn-smbc">三井住友カード 詳細</a>
+<a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F" target="_blank" class="btn btn-rakuten">楽天カードを申し込む</a>
 </div>
 
 <div class="text-section">
 <h3>サイト制作目的</h3>
-<p>
-複雑化するキャッシュレス決済の還元率を、誰でも一瞬で可視化するために制作されました。「結局どこで払うのが一番得なのか？」という悩みを解消し、スマートなポイ活をサポートします。
-</p>
+<p>「還元率は高いけど上限ですぐ終わる」というポイ活の罠を可視化。実質的な獲得ポイントを一瞬で比較するためのツールです。</p>
 </div>
 
 <div class="legal-section">
 <h4>免責事項</h4>
-当サイト「P-checker」で提供される情報（還元率、計算結果、リンク先の内容等）は、細心の注意を払って掲載しておりますが、その正確性、完全性、最新性を保証するものではありません。各サービスの規約変更やキャンペーン終了等により、実際の還元額とは異なる場合があります。利用者が本サイトの情報を用いて行う一切の行為、およびそれに関連して生じた損害、トラブルについて、当サイト管理者は一切の責任を負いません。必ず各公式サイトの最新情報をご確認の上、自己責任においてご利用ください。本サイトは情報の提供を目的としており、特定の金融商品の勧誘を行うものではありません。また、掲載されているリンクの一部にはアフィリエイトプログラムが含まれています。
+当サイト「P-checker」は計算結果の正確性を保証しません。各社の規約変更により実際の還元とは異なる場合があります。利用による損害について管理者は一切の責任を負いません。
 </div>
 </div>
 
 <script>
 function update() {
 const p = parseFloat(document.getElementById('price').value) || 0;
-// 計算ロジック：楽天(1%), 三井通常(0.5%), 三井タッチ(7.0%), PayPay(1%), d(1%), Amazon(2.0%)
-document.getElementById('val-1').innerText = Math.floor(p * 0.01).toLocaleString();
-document.getElementById('val-2').innerText = Math.floor(p * 0.005).toLocaleString();
-document.getElementById('val-3').innerText = Math.floor(p * 0.07).toLocaleString();
-document.getElementById('val-4').innerText = Math.floor(p * 0.01).toLocaleString();
-document.getElementById('val-5').innerText = Math.floor(p * 0.01).toLocaleString();
-document.getElementById('val-6').innerText = Math.floor(p * 0.02).toLocaleString();
+let results = [];
+
+for (let i = 1; i <= 6; i++) {
+const r = parseFloat(document.getElementById('rate' + i).value) || 0;
+const limVal = document.getElementById('limit' + i).value;
+const l = limVal === "" ? Infinity : parseFloat(limVal);
+
+const res = Math.min(p * (r / 100), l);
+const finalRes = Math.floor(res);
+
+document.getElementById('val' + i).innerText = finalRes.toLocaleString();
+results.push({ index: i, val: finalRes });
+
+// 一旦クラスを消す
+document.getElementById('item' + i).classList.remove('best');
 }
-// 初期化
+
+// 一番高いやつを探す（同率なら最初のやつ）
+const maxVal = Math.max(...results.map(r => r.val));
+if (maxVal > 0) {
+const best = results.find(r => r.val === maxVal);
+document.getElementById('item' + best.index).classList.add('best');
+}
+}
 update();
 </script>
 
