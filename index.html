@@ -9,7 +9,6 @@ body { background-color: #ffffff; font-family: sans-serif; color: #000000; margi
 .container { width: 100%; max-width: 500px; }
 .header { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 20px; }
 
-/* 入力エリア */
 .input-section { margin-bottom: 25px; background: #f8f9fa; padding: 25px; border-radius: 20px; border: 2px solid #000; }
 .label-main { color: #000; font-size: 14px; font-weight: 900; margin-bottom: 10px; display: block; text-align: center; }
 
@@ -17,11 +16,9 @@ input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .price-input { background: transparent; border: none; border-bottom: 3px solid #000; color: #000; font-size: 40px; font-weight: 900; width: 100%; outline: none; text-align: center; }
 
-/* 2列グリッド */
 .reward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
 .reward-item { background: #ffffff; padding: 18px 12px; border-radius: 20px; border: 2px solid #dee2e6; text-align: center; transition: 0.3s; }
 
-/* 最得項目のハイライト */
 .reward-item.best { border-color: #00b894; background-color: #e6fffa; box-shadow: 0 5px 20px rgba(0, 184, 148, 0.3); transform: translateY(-3px); }
 
 .name-input { width: 95%; border: none; border-bottom: 2px solid #000; font-size: 15px; font-weight: 900; text-align: center; color: #000; margin-bottom: 12px; outline: none; background: transparent; }
@@ -63,8 +60,9 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <option value="三井住友(タッチ)">
 <option value="PayPayカード">
 <option value="dカード">
-<option value="Amazonプライム">
 <option value="au PAY カード">
+<option value="Amazonプライム">
+<option value="JCB カード W">
 </datalist>
 
 <div class="reward-grid" id="grid"></div>
@@ -73,26 +71,33 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 <div class="text-section">
 <h3>サイト制作目的</h3>
-<p>当サイトは、各キャッシュレス決済が設定している「還元率」と「獲得上限」の複雑な組み合わせを、誰でも簡単にシミュレーションできるように開発されました。特に、大きな買い物をした際に「実は上限を超えてポイントがもらえていなかった」という失敗を防ぐため、金額に応じたリアルタイムの比較を可能にしています。消費者の皆様が、自分自身の利用状況に合わせて設定をカスタマイズし、最も賢い支払い方法を選択できる環境を提供します。</p>
+<p>当サイト「P-checker」は、多種多様なキャッシュレス決済の還元ルールを一本化し、ユーザーが「今、どのカードを使うのが正解か」を即座に判断できるツールとして制作されました。
+多くの還元プログラムには「月間獲得上限」という見えにくい壁が存在します。当サイトでは、この上限設定をリアルタイムでシミュレーションに組み込むことで、高還元率の罠に陥ることなく、真に獲得できるポイント数を可視化します。
+初心者からポイ活上級者まで、個人の利用状況に合わせて設定をカスタマイズし、日常の消費をより戦略的に最適化することを目指しています。</p>
 </div>
 
 <div class="legal-section">
 <h4>免責事項およびご利用規約</h4>
-当サイトの情報は可能な限り正確性を期していますが、サービス改定やキャンペーン変更により実際の還元率と異なる場合があります。計算結果はあくまでシミュレーションであり、実際の獲得ポイントを保証するものではありません。利用によって生じた損害について管理者は一切の責任を負いません。必ず各社の最新情報を公式サイト等でご確認の上、自己責任でご利用ください。
+当サイト「P-checker」で算出される計算結果、還元ポイント数、および各サービスの情報については、細心の注意を払って掲載しておりますが、その内容の正確性、最新性、完全性を保証するものではありません。
+各カード会社や決済事業者の規約改定、キャンペーン内容の変更、上限ポイントの設定変更などにより、実際の獲得ポイントと本サイトの計算結果が異なる場合があります。
+本サイトの利用により生じたいかなる損害（金銭的損失、データの損失、トラブル等）についても、当サイト管理者は一切の責任を負いかねます。必ず各サービスの公式サイトにて最新情報を確認した上で、利用者様ご自身の判断と責任においてご利用ください。
+また、当サイトにはアフィリエイト広告が含まれており、紹介により運営費を得る場合があります。
 </div>
 </div>
 
 <script>
+// 主要6ブランドのデータベース
 const masterData = {
 "楽天カード": {rate: 1.0, limit: ""},
 "三井住友(通常)": {rate: 0.5, limit: ""},
 "三井住友(タッチ)": {rate: 7.0, limit: 1000},
 "PayPayカード": {rate: 1.0, limit: ""},
 "dカード": {rate: 1.0, limit: ""},
-"Amazonプライム": {rate: 2.0, limit: ""}
+"au PAY カード": {rate: 1.0, limit: ""}
 };
 
-const initialNames = ["楽天カード", "三井住友(通常)", "三井住友(タッチ)", "PayPayカード", "dカード", "Amazonプライム"];
+// 初期表示される6つ（被りなし）
+const initialNames = ["楽天カード", "三井住友(通常)", "三井住友(タッチ)", "PayPayカード", "dカード", "au PAY カード"];
 
 const grid = document.getElementById('grid');
 for (let i = 1; i <= 6; i++) {
@@ -110,7 +115,6 @@ grid.innerHTML += `
 `;
 }
 
-// 入力した瞬間にマスターデータと照合して自動セット
 function checkAndFill(idx) {
 const name = document.getElementById('name' + idx).value;
 const data = masterData[name];
@@ -143,7 +147,7 @@ document.getElementById('item' + best.index).classList.add('best');
 }
 }
 
-// 初期セット分の数字を反映
+// 起動時に初期値を反映
 for(let i=1; i<=6; i++) { checkAndFill(i); }
 </script>
 </body>
