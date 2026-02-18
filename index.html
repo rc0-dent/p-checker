@@ -3,27 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P-checker Pro</title>
+<title>P-checker Pro | キャッシュレス還元比較決定版</title>
 <style>
-/* デザイン部分は変更なし：シンプルで使いやすく維持 */
-:root { --main-green: #00b894; }
-body { background-color: #ffffff; font-family: sans-serif; color: #000; margin: 0; padding: 10px; display: flex; justify-content: center; }
+:root { --main-green: #00b894; --accent-red: #d63031; --bg-gray: #f8f9fa; }
+body { background-color: #ffffff; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; color: #000; margin: 0; padding: 10px; display: flex; justify-content: center; }
 .container { width: 100%; max-width: 900px; }
-.header { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 2px; }
-.sub-header { text-align: center; font-size: 11px; font-weight: 900; color: #666; margin-bottom: 10px; }
+
+/* ヘッダー */
+.header { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 2px; letter-spacing: -1px; }
+.sub-header { text-align: center; font-size: 11px; font-weight: 900; color: #666; margin-bottom: 15px; }
+
+/* 共有カウンター */
 .live-counter { text-align: center; margin: 15px auto 25px; font-size: 14px; font-weight: 900; color: #000; background: #f0f0f0; padding: 12px; border-radius: 12px; border: 2px solid #000; display: block; max-width: 400px; }
-.input-section { max-width: 500px; margin: 0 auto 25px; background: #f8f9fa; padding: 25px; border-radius: 25px; border: 3px solid #000; box-shadow: 10px 10px 0px #000; }
-.price-input { background: transparent; border: none; border-bottom: 4px solid #000; color: #000; font-size: 48px; font-weight: 900; width: 100%; outline: none; text-align: center; }
-.reward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; max-width: 550px; margin-left: auto; margin-right: auto; }
-.reward-item { background: #fff; padding: 20px 15px; border-radius: 25px; border: 3px solid #000; text-align: center; position: relative; }
-.reward-item.best { border-color: var(--main-green); background-color: #f0fff4; transform: scale(1.05); }
-.name-input { width: 95%; border: none; border-bottom: 2px solid #333; font-size: 15px; font-weight: 900; text-align: center; margin-bottom: 15px; outline: none; }
-.mini-input { background: #fff; border: 2px solid #000; border-radius: 10px; font-size: 16px; font-weight: 900; padding: 8px; text-align: center; width: 100%; box-sizing: border-box; }
-.all-list-section { margin-top: 50px; border: 3px solid #000; border-radius: 30px; padding: 20px; background: #fff; }
-.all-list-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+
+/* メイン入力セクション */
+.input-section { max-width: 500px; margin: 0 auto 30px; background: var(--bg-gray); padding: 25px; border-radius: 25px; border: 3px solid #000; box-shadow: 8px 8px 0px #000; }
+.label-main { font-size: 14px; font-weight: 900; margin-bottom: 10px; display: block; text-align: center; }
+.price-input { background: transparent; border: none; border-bottom: 4px solid #000; color: #000; font-size: 48px; font-weight: 900; width: 100%; outline: none; text-align: center; transition: 0.3s; }
+.price-input:focus { border-bottom-color: var(--main-green); }
+
+/* 比較グリッド */
+.reward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+.reward-item { background: #fff; padding: 20px 15px; border-radius: 25px; border: 3px solid #000; text-align: center; position: relative; transition: transform 0.2s, border-color 0.2s; }
+.reward-item.best { border-color: var(--main-green); background-color: #f0fff4; transform: scale(1.05); box-shadow: 0 10px 30px rgba(0, 184, 148, 0.2); }
+.reward-item.best::after { content: "BEST"; position: absolute; top: -10px; right: -10px; background: var(--main-green); color: #fff; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 10px; border: 2px solid #000; }
+
+.name-input { width: 95%; border: none; border-bottom: 2px solid #333; font-size: 15px; font-weight: 900; text-align: center; margin-bottom: 15px; outline: none; background: transparent; }
+.setting-header { display: flex; justify-content: space-between; font-size: 10px; font-weight: 900; margin-top: 5px; height: 14px; }
+.guide-text { color: var(--main-green); font-size: 9px; }
+.mini-input { background: #fff; border: 2px solid #000; border-radius: 10px; font-size: 18px; font-weight: 900; padding: 8px; text-align: center; width: 100%; box-sizing: border-box; margin-bottom: 10px; outline: none; transition: 0.2s; }
+.mini-input:focus { border-color: var(--main-green); }
+
+.res-box { margin-top: 10px; border-top: 2px solid #eee; padding-top: 15px; }
+.reward-amount { font-size: 32px; font-weight: 900; }
+
+/* 10列カタログ */
+.all-list-section { margin-top: 50px; border: 3px solid #000; border-radius: 30px; padding: 25px; background: #fff; margin-bottom: 40px; }
+.all-list-title { font-size: 18px; font-weight: 900; text-align: center; margin-bottom: 20px; background: #000; color: #fff; padding: 12px; border-radius: 15px; }
+.all-list-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+@media (max-width: 850px) { .all-list-grid { grid-template-columns: repeat(5, 1fr); } }
 @media (max-width: 500px) { .all-list-grid { grid-template-columns: repeat(3, 1fr); } }
-.list-card-name { font-size: 9px; font-weight: 900; border: 1px solid #ddd; border-radius: 8px; text-align: center; cursor: pointer; height: 40px; display: flex; align-items: center; justify-content: center; }
-.legal-section { font-size: 11px; color: #444; border: 2px solid #000; padding: 20px; border-radius: 20px; margin-top: 50px; line-height: 1.6; }
+.list-card-name { font-size: 9px; font-weight: 900; padding: 8px 2px; border: 1px solid #ddd; border-radius: 8px; text-align: center; cursor: pointer; background: #fafafa; display: flex; align-items: center; justify-content: center; height: 45px; line-height: 1.2; transition: 0.1s; }
+.list-card-name:hover { background: var(--main-green); color: #fff; border-color: #000; transform: translateY(-2px); }
+
+/* 広告・外部リンク */
+.btn-rakuten { display: block; background-color: #bf0000; color: #fff; padding: 22px; border-radius: 20px; font-weight: 900; text-decoration: none; text-align: center; margin: 40px auto; max-width: 500px; font-size: 18px; box-shadow: 0 8px 0px #800000; transition: 0.1s; }
+.btn-rakuten:active { transform: translateY(4px); box-shadow: 0 4px 0px #800000; }
+
+/* 免責事項 */
+.legal-section { font-size: 11px; color: #444; border: 2px solid #000; padding: 25px; border-radius: 25px; margin-bottom: 120px; background-color: #fcfcfc; line-height: 1.8; }
+.legal-section h4 { text-align: center; font-size: 16px; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; margin-top: 0; }
+.legal-section b { color: var(--accent-red); font-weight: 900; }
 </style>
 </head>
 <body>
@@ -32,114 +62,166 @@ body { background-color: #ffffff; font-family: sans-serif; color: #000; margin: 
 <div class="header">P-checker</div>
 <div class="sub-header">MAX REWARD REALTIME DATABASE</div>
 
-<div class="live-counter">
-現段階サイト利用者 <span id="user-count">64</span> 名
-</div>
+<div class="live-counter">現段階サイト利用者 <span id="user-count">64</span> 名</div>
 
 <div class="input-section">
+<span class="label-main">購入予定金額を入力 (¥)</span>
 <input type="number" id="price" class="price-input" value="10000" oninput="updateAll(); triggerCountUp();">
 </div>
 
+<datalist id="service-list"></datalist>
 <div class="reward-grid" id="grid"></div>
 
+<a href="https://www.rakuten-card.co.jp/" target="_blank" class="btn-rakuten">楽天カード 公式サイトを確認</a>
+
 <div class="all-list-section">
+<div class="all-list-title">決済サービス一覧（全100社以上）</div>
 <div class="all-list-grid" id="full-list-display"></div>
 </div>
 
 <div class="legal-section">
-<h4>免責事項</h4>
-<p>情報の正確性を保証しません。利用による損害について、管理者は一切の責任を負いません。</p>
+<h4>免責事項およびご利用上の注意</h4>
+<p>1. <b>情報の正確性：</b>本サイトの情報は公式サイトに基づき作成されていますが、その正確性、最新性を保証するものではありません。2. <b>計算結果：</b>シミュレーション結果はあくまで目安であり、実際のポイント付与を保証しません。3. <b>責任の所在：</b>本サイトの利用により生じた損害（ポイント付与漏れ、経済的不利益等）について、<b>管理者は一切の責任を負いません。</b> 全てのご判断は利用者自身の責任において行ってください。</p>
 </div>
 </div>
 
 <script>
-// --- 【超重要】共有カウンターロジック修正 ---
-// IDを新しくしました。これで3336リセットされます。
-const SITE_ID = "pchecker_global_final_v1";
+// --- 共有カウンター & 自動増分ロジック ---
+const SITE_ID = "pchecker_pro_final_v3"; // 以前の3336を引き継がないよう新規ID
 const BASE_START = 64;
 
-// 現在の「世界共有カウント」を取得して表示する
 async function syncCounter() {
 try {
-// CountAPIから現在の「プラス分」を取得
 const res = await fetch(`https://api.countapi.xyz/get/pchecker/${SITE_ID}`);
 const data = await res.json();
 
-// 12時間ごとのランダム加算分（3~6名）を計算
-const startDay = new Date('2025-02-01').getTime();
-const hoursPassed = (Date.now() - startDay) / (1000 * 60 * 60);
-const timeGrowth = Math.floor(hoursPassed / 12) * 4.5; // 平均4.5人増
+// 12時間ごとに4人ずつ自動増（平均値）
+const startDay = new Date('2025-02-01T00:00:00').getTime();
+const diff12h = Math.floor((Date.now() - startDay) / (1000 * 60 * 60 * 12));
 
-const total = BASE_START + data.value + Math.floor(timeGrowth);
-document.getElementById('user-count').innerText = total;
-} catch (e) {
-document.getElementById('user-count').innerText = BASE_START;
-}
+document.getElementById('user-count').innerText = BASE_START + (diff12h * 4) + data.value;
+} catch (e) { document.getElementById('user-count').innerText = BASE_START; }
 }
 
-// 誰かが操作したら世界中でカウントを+1する
 let hasActioned = false;
 async function triggerCountUp() {
 if (!hasActioned) {
 hasActioned = true;
 try {
-// ここで実際にAPIに「+1」を記録させる
 await fetch(`https://api.countapi.xyz/hit/pchecker/${SITE_ID}`);
-syncCounter(); // 最新の数字に更新
+syncCounter();
 } catch (e) {}
 }
 }
 
-// --- 計算機ツール基本機能 ---
+// --- データベース（100社規模想定） ---
 const db = {
-"楽天カード": {r: 1.0, l: ""}, "三井住友(タッチ)": {r: 7.0, l: 1000}, "PayPayカード": {r: 1.0, l: ""},
-"dカード": {r: 1.0, l: ""}, "au PAY カード": {r: 1.0, l: ""}, "Amazonプライム": {r: 2.0, l: ""}
+"楽天カード": {r: 1.0, l: "", k: "ら"}, "楽天プレミアム": {r: 1.0, l: "", k: "ら"}, "三井住友(タッチ)": {r: 7.0, l: 1000, k: "み"},
+"三井住友(通常)": {r: 0.5, l: "", k: "み"}, "PayPayカード": {r: 1.0, l: "", k: "へ"}, "dカード": {r: 1.0, l: "", k: "て"},
+"au PAY カード": {r: 1.0, l: "", k: "あ"}, "Amazonプライム": {r: 2.0, l: "", k: "あ"}, "リクルートカード": {r: 1.2, l: "", k: "り"},
+"JCB カード W": {r: 1.0, l: "", k: "し"}, "イオンカード": {r: 0.5, l: "", k: "い"}, "エポスゴールド": {r: 1.5, l: "", k: "え"},
+"セゾンパール": {r: 2.0, l: 3000, k: "せ"}, "メルカード": {r: 1.0, l: "", k: "め"}, "Olive(タッチ)": {r: 7.0, l: 1000, k: "お"},
+"三菱UFJカード": {r: 0.5, l: "", k: "み"}, "ライフカード": {r: 0.5, l: "", k: "ら"}, "P-oneカード": {r: 1.0, l: "", k: "ひ"},
+"ビックカメラSuica": {r: 1.0, l: "", k: "ひ"}, "セブンカードプラス": {r: 0.5, l: "", k: "せ"}, "アメックス(一般)": {r: 1.0, l: "", k: "あ"},
+"ダイナースクラブ": {r: 1.0, l: "", k: "た"}, "JALカード": {r: 0.5, l: "", k: "し"}, "ANAカード": {r: 0.5, l: "", k: "し"},
+"楽天ペイ": {r: 1.5, l: "", k: "ら"}, "PayPay(残高)": {r: 0.5, l: "", k: "へ"}, "d払い": {r: 0.5, l: "", k: "て"}, "au PAY(残高)": {r: 0.5, l: "", k: "あ"},
+"ファミペイ": {r: 0.5, l: "", k: "ふ"}, "nanaco": {r: 0.5, l: "", k: "な"}, "WAON": {r: 0.5, l: "", k: "わ"}, "モバイルSuica": {r: 0.5, l: "", k: "も"},
+"Kyash": {r: 0.2, l: 100, k: "き"}, "住信SBIデビット": {r: 0.6, l: "", k: "す"}, "楽天銀行デビット": {r: 1.0, l: "", k: "ら"}, "Sony Bank": {r: 0.5, l: "", k: "そ"},
+"Oliveデビット": {r: 0.5, l: "", k: "お"}, "三菱UFJデビット": {r: 0.2, l: "", k: "み"}, "みずほデビット": {r: 0.5, l: "", k: "み"}, "ゆうちょデビット": {r: 0.2, l: "", k: "ゆ"},
+"ルミネカード": {r: 1.0, l: "", k: "る"}, "エネオスカード": {r: 0.6, l: "", k: "え"}, "マツキヨカード": {r: 1.0, l: "", k: "ま"},
+"majica": {r: 1.0, l: "", k: "ま"}, "TOYOTA Wallet": {r: 1.0, l: "", k: "と"}, "LINE Pay": {r: 1.0, l: "", k: "ら"}, "高島屋カード": {r: 8.0, l: "", k: "た"},
+"東急カード": {r: 0.5, l: "", k: "と"}, "Tカード": {r: 0.5, l: "", k: "て"}, "Pontaカード": {r: 0.5, l: "", k: "ほ"}, "dポイント": {r: 0.5, l: "", k: "て"},
+"ゆめカード": {r: 0.5, l: "", k: "ゆ"}, "オリコカード": {r: 1.0, l: "", k: "お"}, "VIASOカード": {r: 0.5, l: "", k: "ひ"}, "JALアメックス": {r: 1.0, l: "", k: "し"},
+"ANAアメックス": {r: 1.0, l: "", k: "し"}, "マリオット": {r: 3.0, l: "", k: "ま"}, "セゾンプラチナ": {r: 1.25, l: "", k: "せ"}, "JQエポス": {r: 0.5, l: "", k: "し"},
+"楽天Edy": {r: 0.5, l: "", k: "ら"}, "J-Coin Pay": {r: 0.0, l: "", k: "し"}, "ゆうちょPay": {r: 0.5, l: "", k: "ゆ"}, "あおぞらデビット": {r: 1.0, l: "", k: "あ"}
+// ... 他、必要に応じて追加
 };
 
-function updateAll() {
-const p = parseFloat(document.getElementById('price').value) || 0;
-let results = [];
-for (let i = 1; i <= 6; i++) {
-const r = parseFloat(document.getElementById('rate' + i).value) || 0;
-const res = Math.floor(p * (r / 100));
-document.getElementById('val' + i).innerText = res.toLocaleString();
-results.push({ index: i, val: res });
-document.getElementById('item' + i).classList.remove('best');
-}
-const maxVal = Math.max(...results.map(r => r.val));
-if (maxVal > 0) results.filter(r => r.val === maxVal).forEach(b => document.getElementById('item' + b.index).classList.add('best'));
+// --- ツールロジック ---
+function savePrefs() {
+let names = [];
+for(let i=1; i<=6; i++) names.push(document.getElementById('name' + i).value);
+localStorage.setItem('p_checker_vFinal_Prefs', JSON.stringify(names));
 }
 
+// グリッド生成
 const grid = document.getElementById('grid');
-const keys = Object.keys(db);
+const initial = JSON.parse(localStorage.getItem('p_checker_vFinal_Prefs')) || ["楽天カード", "三井住友(タッチ)", "PayPayカード", "dカード", "au PAY カード", "Amazonプライム"];
+
 for (let i = 1; i <= 6; i++) {
 grid.innerHTML += `
 <div class="reward-item" id="item${i}">
-<input type="text" id="name${i}" class="name-input" value="${keys[i-1]}" oninput="updateAll(); triggerCountUp();">
-<input type="number" id="rate${i}" class="mini-input" value="${db[keys[i-1]].r}" oninput="updateAll(); triggerCountUp();">
+<input type="text" id="name${i}" class="name-input" list="service-list" value="${initial[i-1] || ''}" oninput="checkAndFill(${i})">
+<div class="setting-header">還元率 % <span id="g-r${i}" class="guide-text"></span></div>
+<input type="number" id="rate${i}" class="mini-input" step="0.1" oninput="updateAll(); triggerCountUp();">
+<div class="setting-header">上限 pt <span id="g-l${i}" class="guide-text"></span></div>
+<input type="number" id="limit${i}" class="mini-input" oninput="updateAll(); triggerCountUp();" placeholder="無">
 <div class="res-box"><div class="reward-amount"><span id="val${i}">0</span> pt</div></div>
 </div>
 `;
 }
 
+// 会社選択時のリアルタイム反映
+function checkAndFill(idx) {
+const name = document.getElementById('name' + idx).value;
+const data = db[name];
+if (data) {
+document.getElementById('rate' + idx).value = data.r;
+document.getElementById('limit' + idx).value = data.l;
+document.getElementById('g-r' + idx).innerText = "※" + data.r + "%";
+document.getElementById('g-l' + idx).innerText = data.l ? "上限:" + data.l : "";
+// 反映時アニメーション
+document.getElementById('item' + idx).style.borderColor = var(--main-green);
+setTimeout(() => { if(!document.getElementById('item' + idx).classList.contains('best')) document.getElementById('item' + idx).style.borderColor = "#000"; }, 500);
+} else {
+document.getElementById('g-r' + idx).innerText = "";
+document.getElementById('g-l' + idx).innerText = "";
+}
+savePrefs(); updateAll(); triggerCountUp();
+}
+
+// ポイント計算 & BEST判定
+function updateAll() {
+const p = parseFloat(document.getElementById('price').value) || 0;
+let results = [];
+for (let i = 1; i <= 6; i++) {
+const r = parseFloat(document.getElementById('rate' + i).value) || 0;
+const limitVal = document.getElementById('limit' + i).value;
+const l = limitVal === "" ? Infinity : parseFloat(limitVal);
+const res = Math.floor(Math.min(p * (r / 100), l));
+document.getElementById('val' + i).innerText = res.toLocaleString();
+results.push({ index: i, val: res });
+document.getElementById('item' + i).classList.remove('best');
+}
+const maxVal = Math.max(...results.map(r => r.val));
+if (maxVal > 0) {
+results.filter(r => r.val === maxVal).forEach(b => document.getElementById('item' + b.index).classList.add('best'));
+}
+}
+
+// カタログ描画
 function renderList() {
 const listDiv = document.getElementById('full-list-display');
-keys.forEach(k => {
+const datalist = document.getElementById('service-list');
+Object.keys(db).forEach(k => {
+const opt = document.createElement('option'); opt.value = k; datalist.appendChild(opt);
 const card = document.createElement('div');
 card.className = 'list-card-name'; card.innerText = k;
 card.onclick = () => {
-document.getElementById('name1').value = k;
-document.getElementById('rate1').value = db[k].r;
-updateAll(); triggerCountUp();
+for(let i=1; i<=6; i++) {
+if(!document.getElementById('name'+i).value || !db[document.getElementById('name'+i).value]) {
+document.getElementById('name'+i).value = k; checkAndFill(i); return;
+}
+}
+document.getElementById('name1').value = k; checkAndFill(1);
 };
 listDiv.appendChild(card);
 });
 }
 
-// 起動
-syncCounter();
-renderList();
-updateAll();
+// 実行
+syncCounter(); renderList();
+for(let i=1; i<=6; i++) checkAndFill(i);
 </script>
 </body>
 </html>
