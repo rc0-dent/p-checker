@@ -4,109 +4,168 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P-Checker PRO</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-/* 黒ベースのクールなデザイン */
-body { flex: 1; background-color: #000; font-family: sans-serif; color: #fff; margin: 0; padding: 20px; text-align: center; }
-.header { color: #CCFF00; fontSize: 32px; font-weight: 900; margin-bottom: 5px; }
-.subHeader { color: #666; fontSize: 12px; margin-bottom: 20px; }
-
-/* 金額入力メインカード */
-.mainCard { background-color: #111; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #222; }
-.label { color: #888; font-size: 10px; font-weight: bold; margin-bottom: 5px; display: block; }
-input.priceInput { background: transparent; border: none; color: #fff; font-size: 40px; font-weight: 900; text-align: center; width: 100%; outline: none; }
-
-/* 比較用カードの横並び */
-.row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-.card { width: 48%; background-color: #111; padding: 15px; border-radius: 20px; border: 1px solid #222; box-sizing: border-box; }
-.highlightCard { border-color: #CCFF00; }
-.input-mini { background: transparent; border: none; border-bottom: 1px solid #333; color: #fff; width: 100%; text-align: center; font-size: 18px; margin-bottom: 10px; outline: none; }
-
-.resBox { margin-top: 10px; }
-.resPt { font-size: 24px; font-weight: 900; display: block; }
-.resLabel { color: #555; font-size: 10px; }
-
-/* 判定結果カード */
-.resultCard { background-color: #CCFF00; padding: 20px; border-radius: 25px; color: #000; margin-bottom: 20px; }
-.verdictText { font-size: 20px; font-weight: 900; }
-
-/* ボタングループ */
-.btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-.btn { padding: 15px; border-radius: 12px; font-weight: bold; text-decoration: none; display: block; color: #fff; font-size: 14px; }
-.rakuten-btn { background-color: #bf0000; }
-.smbc-btn { background-color: #00a040; }
+body { margin: 0; background-color: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+#root { min-height: 100vh; display: flex; flex-direction: column; }
 </style>
 </head>
 <body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
 
-<div class="header">P-Checker</div>
-<div class="subHeader">〜ポイ活還元・逆転判定ツール〜</div>
+// UI部品のシミュレーション
+const View = ({ style, ...props }) => <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', boxSizing: 'border-box', ...style }} {...props} />;
+const Text = ({ style, ...props }) => <span style={{ display: 'inline-block', ...style }} {...props} />;
+const TextInput = ({ style, value, onChangeText, ...props }) => (
+<input
+style={{ background: 'transparent', border: 'none', outline: 'none', color: 'inherit', font: 'inherit', width: '100%', ...style }}
+value={value}
+onChange={(e) => onChangeText(e.target.value)}
+{...props}
+/>
+);
+const ScrollView = ({ contentContainerStyle, style, ...props }) => <div style={{ overflowY: 'auto', flex: 1, ...style, ...contentContainerStyle }} {...props} />;
+const SafeAreaView = ({ style, ...props }) => <div style={{ flex: 1, display: 'flex', flexDirection: 'column', ...style }} {...props} />;
+const TouchableOpacity = ({ style, onPress, ...props }) => <div style={{ cursor: 'pointer', ...style }} onClick={onPress} {...props} />;
+const StyleSheet = { create: (styles) => styles };
+const Linking = { openURL: (url) => window.open(url, '_blank') };
+const AsyncStorage = {
+getItem: async (key) => localStorage.getItem(key),
+setItem: async (key, val) => localStorage.setItem(key, val)
+};
 
-<div class="mainCard">
-<span class="label">買い物予定金額 (円)</span>
-<input type="number" id="price" class="priceInput" value="10000" oninput="calculate()">
+// ここから下に「完全版コード」の中身を貼り付け
+
+const AD_URLS = {
+'楽天ペイ等': 'https://www.rakuten-card.co.jp/',
+'三井住友NL': 'https://www.smbc-card.com/',
+'J-Coin': 'https://j-coin.jp/',
+'default': 'https://www.google.com'
+};
+
+function App() {
+const [price, setPrice] = useState('10000');
+const [cards, setCards] = useState([
+{ id: 1, name: 'PayPay等', rate: '0.5', limit: '' },
+{ id: 2, name: '楽天ペイ等', rate: '1.5', limit: '' },
+{ id: 3, name: 'd払い等', rate: '0.5', limit: '' },
+{ id: 4, name: '三井住友NL', rate: '7.0', limit: '1000' },
+{ id: 5, name: 'J-Coin', rate: '10.0', limit: '500' },
+{ id: 6, name: '案6', rate: '0.0', limit: '' },
+]);
+
+useEffect(() => {
+const loadData = async () => {
+try {
+const saved = await AsyncStorage.getItem('@p_checker_data_v1');
+if (saved !== null) setCards(JSON.parse(saved));
+} catch (e) { console.error(e); }
+};
+loadData();
+}, []);
+
+const updateCard = async (id, field, value) => {
+const newCards = cards.map(c => c.id === id ? { ...c, [field]: value } : c);
+setCards(newCards);
+await AsyncStorage.setItem('@p_checker_data_v1', JSON.stringify(newCards));
+};
+
+const calcPt = (p, r, l) => {
+const numP = parseFloat(p) || 0;
+const numR = parseFloat(r) || 0;
+const numL = l === '' ? Infinity : parseFloat(l);
+return Math.min(numP * (numR / 100), numL);
+};
+
+const results = cards.map(c => calcPt(price, c.rate, c.limit));
+const maxPt = Math.max(...results);
+const winnerIndex = results.indexOf(maxPt);
+const winnerName = maxPt > 0 ? cards[winnerIndex].name : null;
+
+return (
+<SafeAreaView style={styles.container}>
+<View style={styles.fixedHeader}><Text style={styles.headerTitle}>P-Checker PRO</Text></View>
+<ScrollView contentContainerStyle={styles.scroll}>
+<View style={styles.priceSection}>
+<Text style={styles.label}>買い物金額</Text>
+<View style={styles.priceInputWrapper}>
+<TextInput style={styles.priceInput} value={price} onChangeText={setPrice} />
+<Text style={styles.yenText}>円</Text>
+</View>
+</View>
+{winnerName && (
+<TouchableOpacity style={styles.affiliateBtn} onPress={() => Linking.openURL(AD_URLS[winnerName] || AD_URLS.default)}>
+<Text style={styles.affiliateBtnText}>🔥 {winnerName} で最大還元を受ける</Text>
+</TouchableOpacity>
+)}
+<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', padding: '0 10px' }}>
+{cards.map((card) => {
+const pt = calcPt(price, card.rate, card.limit);
+const isWinner = pt === maxPt && pt > 0;
+return (
+<View key={card.id} style={{ ...styles.card, ...(isWinner ? styles.winnerCard : {}) }}>
+<TextInput style={{ ...styles.cardName, color: isWinner ? '#000' : '#888' }} value={card.name} onChangeText={(v) => updateCard(card.id, 'name', v)} />
+<View style={styles.inputArea}>
+<View style={styles.inputBox}>
+<Text style={{ ...styles.inputLabel, color: isWinner ? '#333' : '#555' }}>還元率%</Text>
+<TextInput style={{ ...styles.cardInput, color: isWinner ? '#000' : '#fff' }} value={card.rate} onChangeText={(v) => updateCard(card.id, 'rate', v)} />
+</View>
+<View style={styles.inputBox}>
+<Text style={{ ...styles.inputLabel, color: isWinner ? '#333' : '#555' }}>上限pt</Text>
+<TextInput style={{ ...styles.cardInput, color: isWinner ? '#000' : '#fff' }} value={card.limit} onChangeText={(v) => updateCard(card.id, 'limit', v)} placeholder="∞" />
+</View>
+</View>
+<View style={{ ...styles.resBox, backgroundColor: isWinner ? 'rgba(0,0,0,0.1)' : '#000' }}>
+<Text style={{ ...styles.resPt, color: isWinner ? '#000' : '#CCFF00' }}>{Math.floor(pt).toLocaleString()}</Text>
+<Text style={{ ...styles.resLabel, color: isWinner ? '#333' : '#666' }}>pt獲得</Text>
+</View>
+</View>
+);
+})}
 </div>
-
-<div class="row">
-<div class="card">
-<span class="label">サービスA 還元率(%)</span>
-<input type="number" id="rateA" class="input-mini" value="0.5" oninput="calculate()">
-<span class="label">上限 (pt)</span>
-<input type="number" id="limitA" class="input-mini" placeholder="無制限" oninput="calculate()">
-<div class="resBox">
-<span class="resPt" id="resA">50 pt</span>
-<span class="resLabel">獲得予定</span>
-</div>
-</div>
-
-<div class="card highlightCard">
-<span class="label" style="color:#CCFF00">サービスB 還元率(%)</span>
-<input type="number" id="rateB" class="input-mini" style="color:#CCFF00" value="5.0" oninput="calculate()">
-<span class="label">上限 (pt)</span>
-<input type="number" id="limitB" class="input-mini" value="500" oninput="calculate()">
-<div class="resBox">
-<span class="resPt" style="color:#CCFF00" id="resB">500 pt</span>
-<span class="resLabel">獲得予定</span>
-</div>
-</div>
-</div>
-
-<div class="resultCard">
-<div id="verdict" class="verdictText">「450円」の差で B の勝ち！</div>
-</div>
-
-<div class="btn-group">
-<a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F"
-target="_blank" class="btn rakuten-btn">楽天でポイ活を開始する</a>
-
-<a href="https://www.smbc-card.com/" target="_blank" class="btn smbc-btn">三井住友カード(NL)をチェック</a>
-</div>
-
-<script>
-function calculate() {
-const p = parseFloat(document.getElementById('price').value) || 0;
-
-function getResult(rateId, limitId) {
-const r = parseFloat(document.getElementById(rateId).value) || 0;
-const l = parseFloat(document.getElementById(limitId).value) || Infinity;
-return Math.min(p * (r / 100), l);
+<View style={styles.trustSection}>
+<Text style={styles.articleTitle}>🤔 なぜ計算が必要なのか</Text>
+<Text style={styles.articleText}>付与上限を超えると還元率は下がります。損をしないための比較ツールです。</Text>
+<Text style={styles.trustText}>免責事項：本結果は保証されません。自己責任で利用してください。</Text>
+</View>
+</ScrollView>
+</SafeAreaView>
+);
 }
 
-const resA = getResult('rateA', 'limitA');
-const resB = getResult('rateB', 'limitB');
+const styles = {
+container: { backgroundColor: '#000' },
+fixedHeader: { padding: '15px', borderBottom: '1px solid #222', textAlign: 'center' },
+headerTitle: { color: '#CCFF00', fontSize: '18px', fontWeight: '900' },
+priceSection: { backgroundColor: '#111', padding: '25px', textAlign: 'center' },
+label: { color: '#666', fontSize: '12px' },
+priceInputWrapper: { display: 'flex', justifyContent: 'center', alignItems: 'baseline' },
+priceInput: { color: '#fff', fontSize: '42px', fontWeight: '900', textAlign: 'center', width: '150px' },
+yenText: { color: '#fff', fontSize: '20px' },
+affiliateBtn: { backgroundColor: '#CCFF00', margin: '12px', padding: '18px', borderRadius: '15px', textAlign: 'center' },
+affiliateBtnText: { color: '#000', fontWeight: '900' },
+card: { width: '48%', backgroundColor: '#111', padding: '12px', borderRadius: '18px', marginBottom: '12px', border: '1px solid #222' },
+winnerCard: { backgroundColor: '#CCFF00', borderColor: '#CCFF00' },
+cardName: { fontSize: '15px', fontWeight: 'bold', textAlign: 'center', marginBottom: '12px' },
+inputArea: { display: 'flex', justifyContent: 'space-between', marginBottom: '12px' },
+inputBox: { width: '45%' },
+inputLabel: { fontSize: '9px' },
+cardInput: { fontSize: '18px', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)' },
+resBox: { borderRadius: '12px', padding: '8px', textAlign: 'center' },
+resPt: { fontSize: '26px', fontWeight: '900' },
+resLabel: { fontSize: '10px' },
+trustSection: { padding: '20px', color: '#999' },
+articleTitle: { color: '#CCFF00', fontWeight: 'bold' },
+articleText: { fontSize: '13px', margin: '10px 0' },
+trustText: { fontSize: '10px' }
+};
 
-document.getElementById('resA').innerText = Math.floor(resA) + ' pt';
-document.getElementById('resB').innerText = Math.floor(resB) + ' pt';
-
-const verdict = document.getElementById('verdict');
-if (resA === resB) {
-verdict.innerText = "どちらも同じです";
-} else if (resA > resB) {
-verdict.innerText = `「${Math.floor(resA - resB)}円」の差で A の勝ち！`;
-} else {
-verdict.innerText = `「${Math.floor(resB - resA)}円」の差で B の勝ち！`;
-}
-}
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
 </script>
-
 </body>
 </html>
