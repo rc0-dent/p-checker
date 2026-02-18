@@ -3,21 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P-checker Pro | 履歴保存機能付</title>
+<title>P-checker Pro | 全カード一覧・保存機能付</title>
 <style>
 body { background-color: #ffffff; font-family: sans-serif; color: #000; margin: 0; padding: 10px; display: flex; justify-content: center; }
-.container { width: 100%; max-width: 800px; }
+.container { width: 100%; max-width: 900px; } /* 一覧を見やすくするため少し広く設定 */
 .header { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 5px; }
 .sub-header { text-align: center; font-size: 12px; font-weight: 900; color: #333; margin-bottom: 20px; }
 
+/* 入力エリア */
 .input-section { max-width: 500px; margin: 0 auto 20px; background: #f8f9fa; padding: 20px; border-radius: 20px; border: 3px solid #000; }
-.label-main { color: #000; font-size: 14px; font-weight: 900; margin-bottom: 8px; display: block; text-align: center; }
+.label-main { font-size: 14px; font-weight: 900; margin-bottom: 8px; display: block; text-align: center; }
 .price-input { background: transparent; border: none; border-bottom: 4px solid #000; color: #000; font-size: 42px; font-weight: 900; width: 100%; outline: none; text-align: center; }
 
 .sort-ctrl { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
 .sort-btn { background: #fff; border: 2px solid #000; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: 900; cursor: pointer; }
 .sort-btn.active { background: #000; color: #fff; }
 
+/* 比較スロット */
 .reward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto; }
 .reward-item { background: #fff; padding: 15px 10px; border-radius: 20px; border: 2px solid #000; text-align: center; transition: 0.3s; }
 .reward-item.best { border-color: #00b894; background-color: #f0fff4; box-shadow: 0 0 25px rgba(0, 184, 148, 0.4); transform: translateY(-3px); }
@@ -31,13 +33,37 @@ body { background-color: #ffffff; font-family: sans-serif; color: #000; margin: 
 .res-box { margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
 .reward-amount { font-size: 26px; font-weight: 900; }
 
-.all-list-section { margin-top: 40px; border: 2px solid #000; border-radius: 20px; padding: 20px; background: #fff; }
-.all-list-title { font-size: 18px; font-weight: 900; text-align: center; margin-bottom: 15px; background: #000; color: #fff; padding: 5px; border-radius: 10px; }
-.all-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-.list-card-name { font-size: 10px; font-weight: 900; padding: 8px 4px; border: 1px solid #ddd; border-radius: 5px; text-align: center; cursor: pointer; background: #fdfdfd; }
-.list-card-name:hover { background: #eee; border-color: #000; }
+/* ★ここが「使える会社一覧」セクション */
+.all-list-section { margin-top: 40px; border: 3px solid #000; border-radius: 20px; padding: 20px; background: #fff; margin-bottom: 30px; }
+.all-list-title { font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 20px; background: #000; color: #fff; padding: 10px; border-radius: 15px; }
 
-.btn-rakuten { display: block; background-color: #bf0000; color: #fff; padding: 20px; border-radius: 15px; font-weight: 900; text-decoration: none; text-align: center; margin: 30px auto; max-width: 500px; }
+/* 10列並べるための設定 */
+.all-list-grid {
+display: grid;
+grid-template-columns: repeat(10, 1fr); /* PCで10列 */
+gap: 5px;
+}
+@media (max-width: 850px) { .all-list-grid { grid-template-columns: repeat(5, 1fr); } } /* タブレットで5列 */
+@media (max-width: 500px) { .all-list-grid { grid-template-columns: repeat(3, 1fr); } } /* スマホで3列 */
+
+.list-card-name {
+font-size: 9px;
+font-weight: 900;
+padding: 10px 2px;
+border: 1px solid #000;
+border-radius: 8px;
+text-align: center;
+cursor: pointer;
+background: #fff;
+display: flex;
+align-items: center;
+justify-content: center;
+line-height: 1.2;
+height: 40px;
+}
+.list-card-name:hover { background: #00b894; color: #fff; }
+
+.btn-rakuten { display: block; background-color: #bf0000; color: #fff; padding: 20px; border-radius: 15px; font-weight: 900; text-decoration: none; text-align: center; margin: 30px auto; max-width: 500px; font-size: 18px; }
 .text-section { background: #fff; padding: 25px; border-radius: 20px; border-left: 8px solid #00b894; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 40px; }
 .legal-section { font-size: 13px; color: #333; border-top: 2px solid #000; padding-top: 30px; margin-bottom: 80px; }
 </style>
@@ -46,10 +72,10 @@ body { background-color: #ffffff; font-family: sans-serif; color: #000; margin: 
 
 <div class="container">
 <div class="header">P-checker</div>
-<div class="sub-header">DATABASE & SAVED PREFERENCES</div>
+<div class="sub-header">DATABASE & PERSONAL SAVED</div>
 
 <div class="input-section">
-<span class="label-main">購入予定金額 (¥)</span>
+<span class="label-main">購入予定金額を入力 (¥)</span>
 <input type="number" id="price" class="price-input" value="10000" oninput="updateAll()">
 </div>
 
@@ -59,27 +85,29 @@ body { background-color: #ffffff; font-family: sans-serif; color: #000; margin: 
 </div>
 
 <datalist id="service-list"></datalist>
+
 <div class="reward-grid" id="grid"></div>
 
 <a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F" target="_blank" class="btn-rakuten">楽天カード 公式サイトを確認</a>
 
 <div class="all-list-section">
-<div class="all-list-title">対応サービス一覧（クリックで比較に追加）</div>
+<div class="all-list-title">比較できる決済サービス一覧（100種以上）</div>
 <div class="all-list-grid" id="full-list-display"></div>
 </div>
 
 <div class="text-section">
 <h3>サイト制作目的</h3>
-<p>「P-checker」は日本のポイ活を極限までシンプルにするためのデータベース型シミュレーターです。100種以上のカードデータと保存機能を搭載し、自分だけの最強比較ツールとして活用できます。</p>
+<p>「P-checker」は、日本の複雑なキャッシュレス還元を一目で比較するために開発されました。100種類以上の主要な決済データを網羅。ブラウザへの保存機能により、あなただけの比較セットをいつでも呼び出せます。</p>
 </div>
 
 <div class="legal-section">
 <h4>免責事項</h4>
-<p>最新情報の提供に努めていますが、還元率や上限は変動する可能性があります。ご利用は自己責任でお願いいたします。</p>
+<p>情報の正確性には万全を期していますが、各社の規約変更により実際の還元率と異なる場合があります。最新情報は各社公式サイトをご確認ください。</p>
 </div>
 </div>
 
 <script>
+// データベース（略）
 const db = {
 "楽天カード": {r: 1.0, l: "", k: "ら"}, "楽天プレミアム": {r: 1.0, l: "", k: "ら"}, "三井住友(タッチ)": {r: 7.0, l: 1000, k: "み"},
 "三井住友(通常)": {r: 0.5, l: "", k: "み"}, "PayPayカード": {r: 1.0, l: "", k: "へ"}, "dカード": {r: 1.0, l: "", k: "て"},
@@ -111,16 +139,13 @@ const defaultNames = ["楽天カード", "三井住友(タッチ)", "PayPayカ�
 
 function saveNames() {
 let names = [];
-for(let i=1; i<=6; i++) {
-names.push(document.getElementById('name' + i).value);
-}
+for(let i=1; i<=6; i++) names.push(document.getElementById('name' + i).value);
 localStorage.setItem('pchecker_names', JSON.stringify(names));
 }
 
 function loadNames() {
 const saved = localStorage.getItem('pchecker_names');
-if (saved) return JSON.parse(saved);
-return defaultNames;
+return saved ? JSON.parse(saved) : defaultNames;
 }
 
 function changeSort(type) {
@@ -157,7 +182,6 @@ checkAndFill(1);
 
 const grid = document.getElementById('grid');
 const initialNames = loadNames();
-
 for (let i = 1; i <= 6; i++) {
 grid.innerHTML += `
 <div class="reward-item" id="item${i}">
@@ -181,12 +205,8 @@ document.getElementById('rate' + idx).value = data.r;
 document.getElementById('limit' + idx).value = data.l;
 document.getElementById('g-r' + idx).innerText = "※" + data.r + "%";
 document.getElementById('g-l' + idx).innerText = data.l ? "上限:" + data.l : "";
-} else {
-document.getElementById('g-r' + idx).innerText = "";
-document.getElementById('g-l' + idx).innerText = "";
 }
-saveNames(); // ここで保存
-updateAll();
+saveNames(); updateAll();
 }
 
 function updateAll() {
