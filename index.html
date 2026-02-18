@@ -5,62 +5,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P-checker | ポイ活還元率計算ツール</title>
 <style>
-/* 黒ベースのプロフェッショナルデザイン */
+/* 全体：黒ベースのプロフェッショナルデザイン */
 body {
 background-color: #000;
-font-family: 'Inter', -apple-system, "Hiragino Kaku Gothic ProN", sans-serif;
+font-family: 'Inter', -apple-system, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
 color: #fff;
 margin: 0;
 padding: 20px;
 line-height: 1.6;
+display: flex;
+justify-content: center;
 }
-.container { max-width: 500px; margin: 0 auto; }
+.container { width: 100%; max-width: 450px; }
 
+/* サイト名ロゴ */
 .header { color: #CCFF00; font-size: 42px; font-weight: 900; text-align: center; margin-bottom: 5px; letter-spacing: -1px; }
-.sub-header { color: #444; font-size: 14px; text-align: center; margin-bottom: 40px; font-weight: bold; }
+.sub-header { color: #444; font-size: 14px; text-align: center; margin-bottom: 30px; font-weight: bold; }
 
-/* 金額入力セクション */
-.input-section { margin-bottom: 40px; background: #111; padding: 25px; border-radius: 25px; border: 1px solid #222; }
+/* 入力セクション */
+.input-section { margin-bottom: 30px; background: #111; padding: 25px; border-radius: 25px; border: 1px solid #222; }
 .label { color: #CCFF00; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; text-align: center; }
 .price-input {
 background: transparent; border: none; border-bottom: 2px solid #333;
 color: #fff; font-size: 50px; font-weight: 900; width: 100%; outline: none;
-text-align: center; transition: 0.3s;
+text-align: center;
 }
-.price-input:focus { border-color: #CCFF00; }
 
-/* 6つの項目を2列に並べる（グリッド） */
+/* 2列グリッド固定設定 */
 .reward-grid {
 display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 15px;
-margin-bottom: 40px;
+grid-template-columns: 1fr 1fr; /* 強制的に50%ずつ2列 */
+gap: 12px;
+margin-bottom: 30px;
+width: 100%;
 }
 .reward-item {
-background: #111; padding: 15px; border-radius: 15px;
+background: #111; padding: 15px 5px; border-radius: 18px;
 border: 1px solid #1a1a1a; text-align: center;
 }
-.service-name { font-size: 13px; font-weight: bold; color: #888; margin-bottom: 5px; }
+.service-name { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 5px; white-space: nowrap; }
 .reward-amount { font-size: 20px; font-weight: 900; color: #fff; }
-.unit { font-size: 12px; color: #CCFF00; margin-left: 2px; }
+.unit { font-size: 11px; color: #CCFF00; margin-left: 2px; }
 
-/* アクションボタン */
-.btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 50px; }
+/* アクションボタン（アフィリエイト用） */
+.btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
 .btn {
 padding: 18px; border-radius: 15px; font-weight: 800; text-decoration: none;
 text-align: center; font-size: 15px; transition: 0.3s;
 }
 .btn-rakuten { background-color: #CCFF00; color: #000; }
 .btn-smbc { border: 1px solid #333; color: #fff; }
+.btn:active { transform: scale(0.98); }
 
-/* テキストセクション */
+/* 制作目的セクション */
 .text-section { text-align: left; background: #0a0a0a; padding: 20px; border-radius: 15px; border-left: 3px solid #CCFF00; margin-bottom: 30px; }
-.text-section h3 { color: #CCFF00; font-size: 16px; margin-top: 0; }
-.text-section p { font-size: 13px; color: #ccc; margin-bottom: 0; }
+.text-section h3 { color: #CCFF00; font-size: 16px; margin: 0 0 10px 0; }
+.text-section p { font-size: 13px; color: #ccc; margin: 0; }
 
-/* 免責事項（自分を守る文） */
-.legal-section { text-align: left; font-size: 11px; color: #444; border-top: 1px solid #222; padding-top: 20px; }
-.legal-section h4 { margin-bottom: 10px; color: #666; }
+/* 免責事項（法的保護） */
+.legal-section { text-align: left; font-size: 11px; color: #444; border-top: 1px solid #222; padding-top: 20px; margin-bottom: 40px; }
+.legal-section h4 { margin: 0 0 10px 0; color: #666; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -96,7 +100,7 @@ text-align: center; font-size: 15px; transition: 0.3s;
 <div class="reward-amount"><span id="val-5">100</span><span class="unit">pt</span></div>
 </div>
 <div class="reward-item">
-<div class="service-name">Amazon(プライム)</div>
+<div class="service-name">Amazonプライム</div>
 <div class="reward-amount"><span id="val-6">200</span><span class="unit">pt</span></div>
 </div>
 </div>
@@ -116,15 +120,14 @@ target="_blank" class="btn btn-rakuten">楽天カードを申し込む</a>
 
 <div class="legal-section">
 <h4>免責事項</h4>
-当サイト「P-checker」で提供される情報（還元率、計算結果、リンク先の内容等）は、細心の注意を払って掲載しておりますが、その正確性、完全性、最新性を保証するものではありません。各サービスの規約変更やキャンペーン終了等により、実際の還元額とは異なる場合があります。利用者が本サイトの情報を用いて行う一切の行為、およびそれに関連して生じた損害、トラブルについて、当サイト管理者は一切の責任を負いません。必ず各公式サイトの最新情報をご確認の上、自己責任においてご利用ください。また、当サイトはアフィリエイトプログラムにより商品を紹介しています。
+当サイト「P-checker」で提供される情報（還元率、計算結果、リンク先の内容等）は、細心の注意を払って掲載しておりますが、その正確性、完全性、最新性を保証するものではありません。各サービスの規約変更やキャンペーン終了等により、実際の還元額とは異なる場合があります。利用者が本サイトの情報を用いて行う一切の行為、およびそれに関連して生じた損害、トラブルについて、当サイト管理者は一切の責任を負いません。必ず各公式サイトの最新情報をご確認の上、自己責任においてご利用ください。本サイトは情報の提供を目的としており、特定の金融商品の勧誘を行うものではありません。また、掲載されているリンクの一部にはアフィリエイトプログラムが含まれています。
 </div>
 </div>
 
 <script>
 function update() {
 const p = parseFloat(document.getElementById('price').value) || 0;
-
-// 1: 楽天(1%), 2: 三井通常(0.5%), 3: 三井タッチ(7.0%), 4: PayPay(1%), 5: d(1%), 6: Amazon(2.0%)
+// 計算ロジック：楽天(1%), 三井通常(0.5%), 三井タッチ(7.0%), PayPay(1%), d(1%), Amazon(2.0%)
 document.getElementById('val-1').innerText = Math.floor(p * 0.01).toLocaleString();
 document.getElementById('val-2').innerText = Math.floor(p * 0.005).toLocaleString();
 document.getElementById('val-3').innerText = Math.floor(p * 0.07).toLocaleString();
@@ -132,6 +135,7 @@ document.getElementById('val-4').innerText = Math.floor(p * 0.01).toLocaleString
 document.getElementById('val-5').innerText = Math.floor(p * 0.01).toLocaleString();
 document.getElementById('val-6').innerText = Math.floor(p * 0.02).toLocaleString();
 }
+// 初期化
 update();
 </script>
 
