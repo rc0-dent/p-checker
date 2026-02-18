@@ -3,109 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ポイ活還元計算機</title>
+<title>P-Checker PRO</title>
 <style>
-/* 背景を明るいブルーのグラデーションに */
-body {
-font-family: 'Helvetica Neue', Arial, sans-serif;
-text-align: center;
-padding: 20px;
-margin: 0;
-background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
-min-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
-}
+/* 黒ベースのクールなデザイン */
+body { flex: 1; background-color: #000; font-family: sans-serif; color: #fff; margin: 0; padding: 20px; text-align: center; }
+.header { color: #CCFF00; fontSize: 32px; font-weight: 900; margin-bottom: 5px; }
+.subHeader { color: #666; fontSize: 12px; margin-bottom: 20px; }
 
-/* 白いふわっとしたカード */
-.card {
-background: rgba(255, 255, 255, 0.95);
-padding: 30px;
-border-radius: 30px;
-box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-max-width: 380px;
-width: 100%;
-}
+/* 金額入力メインカード */
+.mainCard { background-color: #111; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #222; }
+.label { color: #888; font-size: 10px; font-weight: bold; margin-bottom: 5px; display: block; }
+input.priceInput { background: transparent; border: none; color: #fff; font-size: 40px; font-weight: 900; text-align: center; width: 100%; outline: none; }
 
-h2 { color: #333; margin-top: 0; font-size: 1.5rem; }
-p { color: #777; font-size: 0.9rem; }
+/* 比較用カードの横並び */
+.row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+.card { width: 48%; background-color: #111; padding: 15px; border-radius: 20px; border: 1px solid #222; box-sizing: border-box; }
+.highlightCard { border-color: #CCFF00; }
+.input-mini { background: transparent; border: none; border-bottom: 1px solid #333; color: #fff; width: 100%; text-align: center; font-size: 18px; margin-bottom: 10px; outline: none; }
 
-/* 入力エリアを明るく */
-input {
-width: 85%;
-padding: 15px;
-font-size: 1.8rem;
-margin: 20px 0;
-border: 2px solid #e0e0e0;
-border-radius: 15px;
-text-align: center;
-outline: none;
-color: #007bff;
-background: #fdfdfd;
-}
-input:focus { border-color: #74ebd5; }
+.resBox { margin-top: 10px; }
+.resPt { font-size: 24px; font-weight: 900; display: block; }
+.resLabel { color: #555; font-size: 10px; }
 
-/* 結果表示ボックス */
-.result-box {
-background: #f0faff;
-padding: 20px;
-border-radius: 20px;
-margin-bottom: 25px;
-}
-.result-label { font-size: 0.8rem; color: #55a; margin-bottom: 5px; }
-.result-amount { font-size: 2.2rem; color: #ff6b6b; font-weight: bold; }
+/* 判定結果カード */
+.resultCard { background-color: #CCFF00; padding: 20px; border-radius: 25px; color: #000; margin-bottom: 20px; }
+.verdictText { font-size: 20px; font-weight: 900; }
 
-/* ボタンのデザイン */
-.btn-group { display: flex; flex-direction: column; gap: 15px; }
-.btn {
-padding: 18px;
-border: none;
-border-radius: 50px; /* 丸いボタン */
-color: white;
-font-weight: bold;
-cursor: pointer;
-text-decoration: none;
-display: block;
-font-size: 1.1rem;
-box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-transition: 0.3s;
-}
-.btn:active { transform: translateY(2px); box-shadow: none; }
-
-/* 各種カラー */
-.rakuten { background: #ff4747; } /* 明るめの赤 */
-.smbc { background: #2ecc71; } /* 明るめの緑 */
-.dcard { background: #f1c40f; } /* 明るめの黄 */
+/* ボタングループ */
+.btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.btn { padding: 15px; border-radius: 12px; font-weight: bold; text-decoration: none; display: block; color: #fff; font-size: 14px; }
+.rakuten-btn { background-color: #bf0000; }
+.smbc-btn { background-color: #00a040; }
 </style>
 </head>
 <body>
 
+<div class="header">P-Checker</div>
+<div class="subHeader">〜ポイ活還元・逆転判定ツール〜</div>
+
+<div class="mainCard">
+<span class="label">買い物予定金額 (円)</span>
+<input type="number" id="price" class="priceInput" value="10000" oninput="calculate()">
+</div>
+
+<div class="row">
 <div class="card">
-<h2>ポイ活還元計算機</h2>
-<p>いくらお買い物する？</p>
+<span class="label">サービスA 還元率(%)</span>
+<input type="number" id="rateA" class="input-mini" value="0.5" oninput="calculate()">
+<span class="label">上限 (pt)</span>
+<input type="number" id="limitA" class="input-mini" placeholder="無制限" oninput="calculate()">
+<div class="resBox">
+<span class="resPt" id="resA">50 pt</span>
+<span class="resLabel">獲得予定</span>
+</div>
+</div>
 
-<input type="number" id="amount" placeholder="0" oninput="calculate()">
+<div class="card highlightCard">
+<span class="label" style="color:#CCFF00">サービスB 還元率(%)</span>
+<input type="number" id="rateB" class="input-mini" style="color:#CCFF00" value="5.0" oninput="calculate()">
+<span class="label">上限 (pt)</span>
+<input type="number" id="limitB" class="input-mini" value="500" oninput="calculate()">
+<div class="resBox">
+<span class="resPt" style="color:#CCFF00" id="resB">500 pt</span>
+<span class="resLabel">獲得予定</span>
+</div>
+</div>
+</div>
 
-<div class="result-box">
-<div class="result-label">もらえるポイント(1%換算)</div>
-<div class="result-amount" id="result">0 <small style="font-size: 1rem;">円分</small></div>
+<div class="resultCard">
+<div id="verdict" class="verdictText">「450円」の差で B の勝ち！</div>
 </div>
 
 <div class="btn-group">
 <a href="https://rpx.a8.net/svt/ejp?a8mat=4AXE4J+F171O2+2HOM+699KH&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26021880808_4AXE4J_F171O2_2HOM_699KH%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F"
-target="_blank" class="btn rakuten">楽天カードで貯める</a>
+target="_blank" class="btn rakuten-btn">楽天でポイ活を開始する</a>
 
-<a href="https://www.smbc-card.com/" target="_blank" class="btn smbc">三井住友カード</a>
-<a href="https://dcard.docomo.ne.jp/" target="_blank" class="btn dcard">dカード</a>
-</div>
+<a href="https://www.smbc-card.com/" target="_blank" class="btn smbc-btn">三井住友カード(NL)をチェック</a>
 </div>
 
 <script>
 function calculate() {
-const val = document.getElementById('amount').value || 0;
-const points = Math.floor(val * 0.01);
-document.getElementById('result').innerHTML = `${points.toLocaleString()} <small style="font-size: 1rem;">円分</small>`;
+const p = parseFloat(document.getElementById('price').value) || 0;
+
+function getResult(rateId, limitId) {
+const r = parseFloat(document.getElementById(rateId).value) || 0;
+const l = parseFloat(document.getElementById(limitId).value) || Infinity;
+return Math.min(p * (r / 100), l);
+}
+
+const resA = getResult('rateA', 'limitA');
+const resB = getResult('rateB', 'limitB');
+
+document.getElementById('resA').innerText = Math.floor(resA) + ' pt';
+document.getElementById('resB').innerText = Math.floor(resB) + ' pt';
+
+const verdict = document.getElementById('verdict');
+if (resA === resB) {
+verdict.innerText = "どちらも同じです";
+} else if (resA > resB) {
+verdict.innerText = `「${Math.floor(resA - resB)}円」の差で A の勝ち！`;
+} else {
+verdict.innerText = `「${Math.floor(resB - resA)}円」の差で B の勝ち！`;
+}
 }
 </script>
 
